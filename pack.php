@@ -7,7 +7,12 @@ $f = fopen($result, 'w');
 fwrite($f, '<?php ');
 foreach ($files as $file)
 {
-  fwrite($f, packing(file_get_contents("{$file}.inc")));
+  $fn = "{$file}.inc";
+  $fnp = "{$fn}.pack";
+  copy($fn, $fnp);
+  exec("vim $fnp");
+  fwrite($f, packing(file_get_contents($fnp)));
+  unlink($fnp);
 }
 fclose($f);
 
