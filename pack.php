@@ -10,7 +10,7 @@ foreach ($files as $file)
   $fn = "{$file}.inc";
   $fnp = "{$fn}.pack";
   copy($fn, $fnp);
-  exec("vim $fnp");
+//  system("nano $fnp");
   fwrite($f, packing(file_get_contents($fnp)));
   unlink($fnp);
 }

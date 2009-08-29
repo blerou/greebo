@@ -5,10 +5,9 @@ require 'r.inc';
 $no_classes = get_declared_classes();
 
 require 'c.inc';
-require 'd.inc';
 
 $server = $_SERVER;
-$method = strtolower($server['REQUEST_METHOD']);
+$method = $server['REQUEST_METHOD'];
 $uri = @$server['PATH_INFO'] ? $server['PATH_INFO'] : '/';
 foreach (array_diff(get_declared_classes(), $no_classes) as $class)
 {

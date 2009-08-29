@@ -19,7 +19,7 @@ EOB
   
   function post()
   {
-    return render_to_response("title is '{$_POST['title']}'");
+    return render_to_response("title is '{$this->req->param('title')}'");
   }
 }
 
