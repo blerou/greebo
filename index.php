@@ -1,3 +1,5 @@
 <?php
 
-require 'e.inc';
+error_reporting(E_ALL);
+
+require 'ecore.inc';

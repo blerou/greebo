@@ -2,72 +2,42 @@
 
 class Req
 {
-  function param($name, $default = null)
+  function __call($method, $args)
   {
-    $p = ${'_'.$this->method};
-    return isset($p[$name]) ? $p[$name] : $default;
-  }
-  
-  function file($name)
-  {
-    $f = $_FILES;
-    return isset($f[$name]) ? $f[$name] : null;
-  }
-  
-  function header($name)
-  {
-    $s = $_SERVER;
-    return isset($s[$name]) ? $s[$name] : null;
-  }
-  
-  function cookie($name, $default = null)
-  {
-    $c = $_COOKIE;
-    return isset($c[$name]) ? $c[$name] : $default;
+    $p = array();
+    switch ($method)
+    {
+      case 'cookie':
+        $p = $_COOKIE;
+        break;
+      case 'header':
+        $p = $_SERVER;
+        break;
+      case 'file':
+        $p = $_FILES;
+        break;
+      case 'param':
+        $p = ${'_'.$this->method};
+        break;
+    }
+    return isset($c[$args[0]]) ? $c[$args[0]] : $args[1];
   }
 }
 
 class Res
 {
-  /**
-   * header setter
-   */
-  function header($name, $value)
-  {
-    $this->header[$name] = $value;
-  }
-  
-  function cookie($name, $value, $expire = null, $path = '/', $domain = '', $secure = false)
-  {
-    $this->cookie[] = func_get_args();
-  }
-  
-  /**
-   * content setter: string or resource
-   */
-  function content($content)
-  {
-    $this->content = $content;
-  }
+  public $header, $cookie;
+  public $content;
   
   /**
    * send response
    */
   function send()
   {
-    foreach ($this->header as $name => $value)
-    {
-      header("{$name}: {$value}");
-    }
-    foreach ($this->cookie as $cookie)
-    {
+    foreach ((array)$this->header as $header)
+      header($header);
+    foreach ((array)$this->cookie as $cookie)
       call_user_func_array('setrawcookie', $cookie);
-    }
-    if (is_string($this->content))
-    {
-      echo $content;
-      return;
-    }
-    fpassthru($this->content);
+    echo $this->content;
   }
 }
