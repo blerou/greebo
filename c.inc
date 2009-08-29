@@ -23,14 +23,4 @@ EOB
   }
 }
 
-class Poster
-{
-  const URI = '/post';
-  
-  function get()
-  {
-    return render_to_response('this is poster');
-  }
-}
-
 require 'd.inc';
