@@ -7,7 +7,7 @@ class Req
     switch ($method)
     {
       case 'param':
-        $param = $GLOBALS['_'.$this->method];
+        $param = $GLOBALS['_'.$this->m];
         break;
       default:
         $param = @$GLOBALS['_'.strtoupper($method)];
@@ -18,9 +18,6 @@ class Req
 
 class Res
 {
-  public $header, $cookie;
-  public $content;
-  
   function send()
   {
     foreach ((array)$this->header as $header)

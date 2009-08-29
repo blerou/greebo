@@ -7,12 +7,7 @@ $f = fopen($result, 'w');
 fwrite($f, '<?php ');
 foreach ($files as $file)
 {
-  $fn = "{$file}.inc";
-  $fnp = "{$fn}.pack";
-  copy($fn, $fnp);
-//  system("nano $fnp");
-  fwrite($f, packing(file_get_contents($fnp)));
-  unlink($fnp);
+  fwrite($f, packing(file_get_contents("{$file}.inc")));
 }
 fclose($f);
 
@@ -20,26 +15,32 @@ function packing($c)
 {
   // general rewrites
   $rep = array(
-    '/\<\?php\s*/' => '',
-    '/\s*\n\s*/' => '',
-    '/;\s+/s' => ';',
-    '/ \? /' => '?',
-    '/ : /' => ':',
-    '/, /' => ',',
-    '/ = /' => '=',
-    '/if\s+/' => 'if',
-    '/foreach\s+/' => 'foreach',
-    '/as\s+\$/' => 'as$',
-    '/\)\s+as\$/' => ')as$',
-    '/\s*{\s*/' => '{',
-    '/\s*}\s*/' => '}',
-    '/\s*case\s*\'/' => 'case\'',
-    '/\s*require\s*\'/' => 'require\'',
-    
+    // comments
     '/\/\*\*.+?\*\//s' => '',
+    '/\/\/.*$/m' => '',
+  
+    '/\<\?php\s*/' => '',
+    '/\s+/' => ' ',
+    
+    '/\s*([;()?:,={}$@\'])\s*/' => '\1',
   );
   foreach ($rep as $f => $t)
     $c = preg_replace($f, $t, $c);
+    
+  // variable rewrites
+  $rep = array(
+    'no_classes' => 'n',
+    'server' => 's',
+    'class' => 'c',
+    'method' => 'm',
+    'uri' => 'u',
+    'args' => 'a',
+    'param' => 'p',
+    'header' => 'h',
+    'cookie' => 'c',
+  );
+  foreach ($rep as $f => $t)
+    $c = str_replace("\$$f", "\$$t", $c);
   
   // special post processing
   $clear = array("require'r.inc';", "require'd.inc';");
