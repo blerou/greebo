@@ -32,3 +32,5 @@ class Poster
     return render_to_response('this is poster');
   }
 }
+
+require 'd.inc';

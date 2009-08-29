@@ -2,21 +2,22 @@
 
 require 'r.inc';
 
-$nc = get_declared_classes();
+$no_classes = get_declared_classes();
 
 require 'c.inc';
 require 'd.inc';
 
-$s = $_SERVER;
-$m = strtolower($s['REQUEST_METHOD']);
-foreach (array_diff(get_declared_classes(), $nc) as $c)
+$server = $_SERVER;
+$method = strtolower($server['REQUEST_METHOD']);
+$uri = @$server['PATH_INFO'] ? $server['PATH_INFO'] : '/';
+foreach (array_diff(get_declared_classes(), $no_classes) as $class)
 {
-  if (preg_match(sprintf('!^%s$!', constant("{$c}::URI")), $s['PATH_INFO']))
+  if (preg_match(sprintf('!^%s$!', constant("{$class}::URI")), $uri))
   {
-    if (!method_exists($c, $m)) continue;
-    $c = new $c;
-    $c->req = new Req;
-    $c->req->method = $m;
-    return $c->$m()->send();
+    if (!method_exists($class, $method)) continue;
+    $class = new $class;
+    $class->req = new Req;
+    $class->req->method = $method;
+    return $class->$method()->send();
   }
 }
