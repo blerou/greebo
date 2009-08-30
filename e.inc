@@ -4,7 +4,7 @@ require 'r.inc';
 
 $no_classes = get_declared_classes();
 
-require 'c.inc';
+require CTRLS;
 
 $server = $_SERVER;
 $method = $server['REQUEST_METHOD'];

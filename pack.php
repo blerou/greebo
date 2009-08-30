@@ -1,15 +1,20 @@
 <?php
 
-$files = array('e', 'r');
-$result = 'ecore.inc';
+$tupak = array(
+  'lib/ecore.inc' => array('r', 'e'),
+  'lib/extra.inc' => array('h', 'd'),
+);
 
-$f = fopen($result, 'w');
-fwrite($f, '<?php ');
-foreach ($files as $file)
+foreach ($tupak as $result => $files)
 {
-  fwrite($f, packing(file_get_contents("{$file}.inc")));
+  $f = fopen($result, 'w');
+  fwrite($f, '<?php ');
+  foreach ($files as $file)
+  {
+    fwrite($f, packing(file_get_contents("{$file}.inc")));
+  }
+  fclose($f);
 }
-fclose($f);
 
 function packing($c)
 {
@@ -38,12 +43,13 @@ function packing($c)
     'param' => 'p',
     'header' => 'h',
     'cookie' => 'c',
+    'text' => 't',
   );
   foreach ($rep as $f => $t)
     $c = str_replace("\$$f", "\$$t", $c);
   
   // special post processing
-  $clear = array("require'r.inc';", "require'd.inc';");
+  $clear = array("require'r.inc';");
   foreach ($clear as $cl)
     $c = str_replace($cl, '', $c);
   

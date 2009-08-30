@@ -1,8 +1,6 @@
 <?php
 
-require 'b.inc';
-
-class Lister
+class Example
 {
   const URI = '/?';
   
@@ -22,5 +20,3 @@ EOB
     return render_to_response("title is '{$this->req->param('title')}'");
   }
 }
-
-require 'd.inc';
