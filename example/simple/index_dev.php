@@ -1,6 +1,6 @@
 <?php
 
-define('ENVIRONMENT', 'prod');
+define('ENVIRONMENT', 'dev');
 
 require 'bootstrap.inc';
 

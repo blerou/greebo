@@ -2,34 +2,39 @@
 
 class V
 {
-  public $v = array();
-  
   function render($t)
   {
-    $this->escape();
-    extract($this->v);
+    extract(self::escape((array)$this->v));
     ob_start();
     include $t;
     return ob_get_clean();
   }
   
-  function escape($vars = null);
+  static function esc($var);
   {
-    $vars = $vars ? $vars : $this->v;
-    foreach ((array)$vars as $n => $v)
+    switch (1)
     {
-      switch (1)
-      {
-        case is_string($v):
-          $vars[$n] = htmlspecialchars($v);
-          break;
-        case is_object($v):
-          $vars[$n] = new OE($v);
-          break;
-        case is_array($v):
-          $vars[$n] = $this->escape($v);
-          break;
+      case is_string($var):
+        return htmlspecialchars($var);
+      case is_object($var):
+        $obj = new VE($var);
+        $obj->v = $var;
+        return $obj;
+      case is_array($var):
+        foreach ($var as $k => $v)
+        {
+          $var[$k] = self::escape($v);
+        }
     }
+    return $var;
+  }
+}
+
+class VE
+{
+  function __call($method, $args)
+  {
+    
   }
 }
 

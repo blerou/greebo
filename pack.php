@@ -1,11 +1,11 @@
 <?php
 
-$tupak = array(
-  'lib/ecore.inc' => array('r', 'e'),
+$tupac = array(
+  'lib/ecore.inc' => array('r', 'c', 'e'),
   'lib/extra.inc' => array('h', 'd'),
 );
 
-foreach ($tupak as $result => $files)
+foreach ($tupac as $result => $files)
 {
   $f = fopen($result, 'w');
   fwrite($f, '<?php ');
