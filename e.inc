@@ -11,7 +11,7 @@ $method = $server['REQUEST_METHOD'];
 $uri = @$server['PATH_INFO'] ? $server['PATH_INFO'] : '/';
 foreach (array_diff(get_declared_classes(), $no_classes) as $class)
 {
-  if (preg_match(sprintf('!^%s$!', constant("{$class}::URI")), $uri))
+  if (preg_match(sprintf('!^%s$!', constant("$class::URI")), $uri))
   {
     if (!method_exists($class, $method)) continue;
     $class = new $class;

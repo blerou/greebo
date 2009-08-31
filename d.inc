@@ -1,6 +1,6 @@
 <?php
 
-class HandlerFor404
+class E404
 {
   const URI = '.*';
   

@@ -2,7 +2,7 @@
 
 $tupac = array(
   'lib/ecore.inc' => array('r', 'c', 'e'),
-  'lib/extra.inc' => array('h', 'd'),
+  'lib/extra.inc' => array('v', 'h', 'd'),
 );
 
 foreach ($tupac as $result => $files)
@@ -43,6 +43,7 @@ function packing($c)
     'param' => 'p',
     'header' => 'h',
     'cookie' => 'c',
+    'var' => 'v',
     'text' => 't',
   );
   foreach ($rep as $f => $t)

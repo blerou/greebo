@@ -20,10 +20,15 @@ class Res
 {
   function send()
   {
-    foreach ((array)$this->header as $header)
+    foreach ($this->header as $header)
       header($header);
-    foreach ((array)$this->cookie as $cookie)
+    foreach ($this->cookie as $cookie)
       call_user_func_array('setrawcookie', $cookie);
     echo $this->content;
+  }
+  
+  function __get($var)
+  {
+    return array();
   }
 }

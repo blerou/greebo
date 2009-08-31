@@ -2,12 +2,17 @@
 
 class V
 {
-  function render($t)
+  function render()
   {
-    extract(self::escape((array)$this->v));
+    extract(self::esc((array)$this->v));
     ob_start();
-    include $t;
+    echo $this->template();
     return ob_get_clean();
+  }
+  
+  function raw($var)
+  {
+    return @$this->v[$var];
   }
   
   static function esc($var);
@@ -23,18 +28,20 @@ class V
       case is_array($var):
         foreach ($var as $k => $v)
         {
-          $var[$k] = self::escape($v);
+          $var[$k] = self::esc($v);
         }
     }
     return $var;
   }
+  
+  function template() { }
 }
 
 class VE
 {
   function __call($method, $args)
   {
-    
+    return V::esc(@call_user_func_array(array($this, $method), $args));
   }
 }
 
