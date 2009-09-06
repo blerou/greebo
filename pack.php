@@ -1,18 +1,13 @@
 <?php
 
-$tupac = array(
-  'lib/ecore.inc' => array('r', 'c', 'e'),
-  'lib/extra.inc' => array('v', 'h', 'd'),
-);
+if (basename(__FILE__) == $_SERVER['SCRIPT_FILENAME'])
+  packer($_SERVER['argv'][1]);
 
-foreach ($tupac as $result => $files)
+function packer($input)
 {
-  $f = fopen($result, 'w');
+  $f = fopen("lib/$input.php", 'w');
   fwrite($f, '<?php ');
-  foreach ($files as $file)
-  {
-    fwrite($f, packing(file_get_contents("{$file}.inc")));
-  }
+  fwrite($f, packing(file_get_contents("$input.php")));
   fclose($f);
 }
 
@@ -34,25 +29,23 @@ function packing($c)
     
   // variable rewrites
   $rep = array(
-    'no_classes' => 'n',
-    'server' => 's',
-    'class' => 'c',
-    'method' => 'm',
-    'uri' => 'u',
     'args' => 'a',
-    'param' => 'p',
-    'header' => 'h',
+    'app' => 'a',
+    'class' => 'c',
     'cookie' => 'c',
-    'var' => 'v',
+    'header' => 'h',
+    'method' => 'm',
+    'match' => 'm',
+    'name' => 'n',
+    'no_classes' => 'n',
+    'param' => 'p',
+    'server' => 's',
     'text' => 't',
+    'uri' => 'u',
+    'var' => 'v',
   );
   foreach ($rep as $f => $t)
     $c = str_replace("\$$f", "\$$t", $c);
-  
-  // special post processing
-  $clear = array("require'r.inc';");
-  foreach ($clear as $cl)
-    $c = str_replace($cl, '', $c);
   
   return $c;
 }
