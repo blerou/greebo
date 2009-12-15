@@ -6,13 +6,13 @@ switch (ENVIRONMENT)
 {
   case 'dev':
     error_reporting(E_ALL | E_STRICT);
-    define('EDC_LIB_DIR', __DIR__.'/../..');
+    define('EDC_LIB_DIR', dirname(__FILE__).'/../..');
     break;
   
   case 'prod':
   default:
     error_reporting(E_NONE);
-    define('EDC_LIB_DIR', __DIR__.'/../../lib');
+    define('EDC_LIB_DIR', dirname(__FILE__).'/../../lib');
 }
 
 require EDC_LIB_DIR.'/greebo.php';

@@ -12,7 +12,7 @@ class Greebo
     $uri = @$_SERVER['PATH_INFO'] ? $_SERVER['PATH_INFO'] : '/';
     foreach (array_diff(get_declared_classes(), self::$no_classes) + array('E404') as $class)
     {
-      if (preg_match(sprintf('!^%s$!', constant("$class::R")), $uri, $match))
+      if (preg_match(sprintf('!^%s$!', @constant("$class::R")), $uri, $match))
       {
         if (!method_exists($class, METHOD)) continue;
         $class = new $class;
