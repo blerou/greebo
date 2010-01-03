@@ -29,20 +29,19 @@ function packing($c)
     
   // variable rewrites
   $rep = array(
-    'args' => 'a',
-    'app' => 'a',
+    'no_classes' => 'n',
+    'server' => 's',
     'class' => 'c',
-    'cookie' => 'c',
-    'header' => 'h',
     'method' => 'm',
+    'uri' => 'u',
+    'args' => 'a',
+    'param' => 'p',
+    'header' => 'h',
+    'cookie' => 'c',
+    'var' => 'v',
+    'text' => 't',
     'match' => 'm',
     'name' => 'n',
-    'no_classes' => 'n',
-    'param' => 'p',
-    'server' => 's',
-    'text' => 't',
-    'uri' => 'u',
-    'var' => 'v',
   );
   foreach ($rep as $f => $t)
     $c = str_replace("\$$f", "\$$t", $c);

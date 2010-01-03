@@ -1,23 +1,7 @@
-edc is an MVC microframework written in PHP, what fits in 1k ... or 2 ;).
+Greebo is a PHP microframework / framework essence written in PHP 5.3.
 
-It was inspired by Camping microframework ( http://en.wikipedia.org/wiki/Camping_(microframework) ). I have also used concepts from symfony ( http://www.symfony-project.org/ ) and django ( http://www.djangoproject.com/ ).
+It was inspired by [Camping microframework](http://en.wikipedia.org/wiki/Camping_(microframework) Camping microframework). I have also used concepts from symfony ( http://www.symfony-project.org/ ) and django ( http://www.djangoproject.com/ ).
 
-Concept:
---------
- - e.inc: 
-     Responsible for dispatch the request, load the affected controller.
-     A controller can handle a request if it's uri is matching with the request uri and has a method that name is suited to actual HTTP method. In edc the contorller has no parent class.
-     Every controller must return with a response object.
- - c.inc:
-     Holds the controller classes.
- - r.inc:
-    Request and response object container.
-    The request object is a simple data container. You can get request parameters through 4 methods: param(), file(), header(), cookie(). All getter has 2 parameter: name of the parameter and a default return value.
-    The response object is a prototype of a possible response. The framework has only one assumption about response object: it has a send() method.
+# Concept:
 
-Extra files:
- - b.inc:
-     Simple bootstrap file, used by the custom c.inc.
- - d.inc:
-     Some defaults. It contains a 404 error handler class.
-
+Every request is wrapped by a Request object, and at the end of the process it sends back a Response.
