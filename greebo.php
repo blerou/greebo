@@ -189,6 +189,19 @@ class Response extends Base
   }
 }
 
+class Template
+{
+  private $_vars = array();
+  function fetch()
+  {
+    ob_start();
+    echo $this->content();
+    return ob_get_clean();
+  }
+  
+  function content() {}
+}
+
 
 /**
  * ClassLoader implementation that implements the technical interoperability
@@ -223,17 +236,9 @@ class ClassLoader
   {
     if (!isset($this->namespaces[$namespace]))
     {
-      $this->namespaces[$namespace] = $includePath;
+      $this->namespaces[$namespace] = array();
     }
-    else
-    {
-      if (!is_array($this->namespaces[$namespace]))
-      {
-        $this->namespaces[$namespace] = array($this->namespaces[$namespace]);
-      }
-  
-      $this->namespaces[$namespace][] = $includePath;
-    }
+    $this->namespaces[$namespace][] = $includePath;
   }
 
   /**
@@ -260,43 +265,28 @@ class ClassLoader
   public function loadClass($className)
   {
     $vendor = substr($className, 0, stripos($className, '\\'));
-    if ($vendor || isset($this->namespaces['']))
+    if (!$vendor && !isset($this->namespaces[''])) return;
+    
+    $fileName = '';
+    $namespace = '';
+    if (false !== ($lastNsPos = strripos($className, '\\')))
     {
-      $fileName = '';
-      $namespace = '';
-      if (false !== ($lastNsPos = strripos($className, '\\')))
-      {
-        $namespace = substr($className, 0, $lastNsPos);
-        $className = substr($className, $lastNsPos + 1);
-        $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
-      }
-      $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className).'.php';
-  
-      if (null !== $this->namespaces[$vendor])
-      {
-        if (is_array($this->namespaces[$vendor]))
-        {
-          foreach ($this->namespaces[$vendor] as $dir)
-          {
-            if (!file_exists($dir.DIRECTORY_SEPARATOR.$fileName))
-            {
-              continue;
-            }
-  
-            require $dir.DIRECTORY_SEPARATOR.$fileName;
-  
-            break;
-          }
-        }
-        else
-        {
-          require $this->namespaces[$vendor].DIRECTORY_SEPARATOR.$fileName;
-        }
-      }
-      else
-      {
-        require $fileName;
-      }
+      $namespace = substr($className, 0, $lastNsPos);
+      $className = substr($className, $lastNsPos + 1);
+      $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
+    }
+    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className).'.php';
+
+    if (!isset($this->namespaces[$vendor]))
+    {
+      require $fileName;
+      return;
+    }
+    foreach ($this->namespaces[$vendor] as $dir)
+    {
+      if (!file_exists($dir.DIRECTORY_SEPARATOR.$fileName)) continue;
+      require $dir.DIRECTORY_SEPARATOR.$fileName;
+      break;
     }
   }
 }
