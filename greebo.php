@@ -4,26 +4,26 @@ namespace Greebo;
 
 class Greebo
 {
-  private $container;
+  private $_container;
   
-  function __construct($config)
+  function __construct(Container $container)
   {
-    $this->container = include $config;
-    $this->container->loader->registerNamespace($container->app_vendor, $container->app_lib_dir);
-    $this->container->loader->register();
+    $this->_container = $container;
+    $this->_container->loader->registerNamespace($this->_container->app_vendor, $this->_container->app_lib_dir);
+    $this->_container->loader->register();
   }
   
-  static function create($config)
+  static function create(Container $container)
   {
-    return new self($config);
+    return new self($container);
   }
   
-  function handle()
+  function unleash()
   {
-    $controller = $this->container->controller;
+    $controller = $this->_container->controller;
     $controller();
     
-    $this->container->response->send();
+    $this->_container->response->send();
   }
 }
 
@@ -32,16 +32,16 @@ class Greebo
  */
 class Container
 {
-  private $services = array();
+  private $_services = array();
   
-  function __set($id, $value)
+  function __set($id, $val)
   {
-    $this->services[$id] = $value;
+    $this->_services[$id] = $val;
   }
   
   function __get($id)
   {
-    return is_callable($this->services[$id]) ? $this->services[$id]($this) : (@$this->services[$id] ?: null);
+    return is_callable($this->_services[$id]) ? $this->_services[$id]($this) : (@$this->_services[$id] ?: null);
   }
   
   function shared($callable)
@@ -54,60 +54,44 @@ class Container
   }
 }
 
-class BasicContainer extends Container
-{
-  function __construct()
-  {
-    $this->loader = $this->shared(function($c) {
-      return new ClassLoader;
-    });
-    $this->request = $this->shared(function($c) {
-      return new Request($c);
-    });
-    $this->response = $this->shared(function($c) {
-      return new Response($c);
-    });
-    $this->controller = $this->shared(function($c) {
-      $class = sprintf('%s\\Controller\\%s', $c->app_vendor, $c->app_controller);
-      return new $class($c);
-    });
-    $this->template = $this->shared(function($c) {
-      $class = sprintf('%s\\Template\\%s', $c->app_vendor, $c->app_controller);
-      return new $class;
-    });
-    $this->hooks = $this->shared(function($c) {
-      return new Hooks;
-    });
-  }
-}
-
 class Hooks
 {
-  private $hooks = array();
+  private $_hooks = array();
   
   function reg($hook, $callable)
   {
-    $this->hooks[$hook][] = $callable;
+    $this->_hooks[$hook][] = $callable;
   }
   
-  function fire(Hook $hook)
+  function fire($hook, $subject)
   {
+    foreach ($this->_hooks[$hook] as $callable)
+      $callable($subject);
+  }
   
+  function filter($hook, $subject, $content)
+  {
+    foreach ($this->_hooks[$hook] as $callable)
+      $content = $callable($subject, $content);
+    return $content;
   }
 }
 
 class Base
 {
-  private $container;
+  private $_container;
 
   function __construct(Container $container)
   {
-    $this->container = $container;
+    $this->_container = $container;
+    $this->init();
   }
+  
+  function init() {}
 
   function __get($name)
   {
-    return $this->container->$name;
+    return $this->_container->$name;
   }
 }
 
@@ -115,16 +99,10 @@ class Controller extends Base
 {
   function __invoke()
   {
-    $action = $this->request->param('action', 'index');
-
-    $result = (method_exists($this, $method = $action.'Action')) ? $this->$method() : null;
-
-    $this->response->content($this->template->fetch());
-  }
-
-  function set($slot, $val)
-  {
-    $this->template->set($slot, $val);
+    $result = (method_exists($this, $method = $this->action.'Action')) ? $this->$method() : null;
+    
+    if (false !== $result && $this->template)
+      $this->response->content($this->template->fetch());
   }
 }
 
@@ -153,67 +131,77 @@ class Request extends Base
 class Response extends Base
 {
   private 
-    $header = array(),
-    $cookie = array(),
-    $status = 200,
-    $content = null;
+    $_header = array(),
+    $_cookie = array(),
+    $_status = 200,
+    $_content = null;
   
   function status($status)
   {
-    $this->status = (int)$status;
+    $this->_status = (int)$status;
   }
   
   function header($name, $val)
   {
-    $this->header[$name] = $val;
+    $this->_header[$name] = $val;
   }
   
   function cookie($val)
   {
-    $this->cookie[] = $val;
+    $this->_cookie[] = $val;
   }
   
   function content($content)
   {
-    $this->content = $content;
+    $this->_content = $content;
   }
   
   function send()
   {
-    header($this->request->header('SERVER_PROTOCOL').' '.$this->status);
-    foreach ($this->header as $name => $header)
+    header($this->request->header('SERVER_PROTOCOL').' '.$this->_status);
+    foreach ($this->_header as $name => $header)
       header("$name: $header");
-    foreach ($this->cookie as $cookie)
+    foreach ($this->_cookie as $cookie)
       call_user_func_array('setrawcookie', $cookie);
-    if (null !== $this->content)
-      echo $this->content;
-  }
-  
-  function redirect($uri)
-  {
-    $this->header('Location', $uri);
-    $this->content = null;
-    $this->send();
-    exit;
+    if (null !== $this->_content)
+      echo $this->_content;
   }
 }
 
-abstract class Template
+class Template
 {
   private
     $_slots = array(),
-    $_escaper = function($val) { return htmlentities($val, ENT_QUOTES, 'utf-8'); };
-
-  function get($slot)
+    $_slot,
+    $_escaper;
+  
+  function __get($slot)
   {
     return @$this->_slots[$slot] ?: null;
   }
-
-  function set($slot, $val)
+  
+  function __set($slot, $val)
   {
-    $this->_slot[$slot] = $val;
+    $this->_slots[$slot] = $val;
   }
-
+  
+  function rec($slot)
+  {
+    $this->_slot = $slot;
+    ob_start();
+  }
+  
+  function stop()
+  {
+    $this->_slots[$this->_slot] = ob_get_clean();
+    $this->_slot = null;
+  }
+  
+  function escaper(\Closure $escaper)
+  {
+    $this->_escaper = $escaper;
+  }
+  
   function fetch()
   {
     ob_start();
@@ -221,104 +209,10 @@ abstract class Template
     return ob_get_clean();
   }
   
-  abstract function content();
-  
-  function escaper(Closure $escaper)
-  {
-    $this->_escaper = $escaper;
-  }
+  function content() {}
 
   function escape($val)
   {
-    return (is_string($val)) ? $this->_escaper($val) : $val;
-  }
-}
-
-
-/**
- * ClassLoader implementation that implements the technical interoperability
- * standards for PHP 5.3 namespaces and class names.
- *
- * Based on http://groups.google.com/group/php-standards/web/final-proposal
- *
- * Example usage:
- *
- *     [php]
- *     $loader = new ClassLoader();
- *     $loader->registerNamespace('Symfony', __DIR__.'/..');
- *     $loader->register();
- *
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Roman S. Borschel <roman@code-factory.org>
- * @author Matthew Weier O'Phinney <matthew@zend.com>
- * @author Kris Wallsmith <kris.wallsmith@gmail.com>
- * @author Fabien Potencier <fabien.potencier@symfony-project.org>
- */
-class ClassLoader
-{
-  protected $namespaces = array();
-
-  /**
-   * Creates a new loader for classes of the specified namespace.
-   *
-   * @param string $namespace   The namespace to use
-   * @param string $includePath The path to the namespace
-   */
-  public function registerNamespace($namespace, $includePath = null)
-  {
-    if (!isset($this->namespaces[$namespace]))
-    {
-      $this->namespaces[$namespace] = array();
-    }
-    $this->namespaces[$namespace][] = $includePath;
-  }
-
-  /**
-   * Installs this class loader on the SPL autoload stack.
-   */
-  public function register()
-  {
-    spl_autoload_register(array($this, 'loadClass'));
-  }
-
-  /**
-   * Uninstalls this class loader from the SPL autoloader stack.
-   */
-  public function unregister()
-  {
-    spl_autoload_unregister(array($this, 'loadClass'));
-  }
-
-  /**
-   * Loads the given class or interface.
-   *
-   * @param string $className The name of the class to load
-   */
-  public function loadClass($className)
-  {
-    $vendor = substr($className, 0, stripos($className, '\\'));
-    if (!$vendor && !isset($this->namespaces[''])) return;
-    
-    $fileName = '';
-    $namespace = '';
-    if (false !== ($lastNsPos = strripos($className, '\\')))
-    {
-      $namespace = substr($className, 0, $lastNsPos);
-      $className = substr($className, $lastNsPos + 1);
-      $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
-    }
-    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className).'.php';
-
-    if (!isset($this->namespaces[$vendor]))
-    {
-      require $fileName;
-      return;
-    }
-    foreach ($this->namespaces[$vendor] as $dir)
-    {
-      if (!file_exists($dir.DIRECTORY_SEPARATOR.$fileName)) continue;
-      require $dir.DIRECTORY_SEPARATOR.$fileName;
-      break;
-    }
+    return is_string($val) ? call_user_func($this->_escaper, $val) : $val;
   }
 }

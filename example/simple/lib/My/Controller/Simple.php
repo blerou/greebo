@@ -1,8 +1,8 @@
 <?php
 
-namespace Greebo\Controller;
+namespace My\Controller;
 
-class simple extends \Greebo\Controller
+class Simple extends \Greebo\Controller2
 {
   function indexAction()
   {

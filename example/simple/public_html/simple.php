@@ -1,5 +1,5 @@
 <?php
 
-$config = include __DIR__.'/../config/bootstrap.simple.php';
+require dirname(__DIR__).'/lib/Greebo/Bootstrap/Simple.php';
 
-Greebo\Greebo::create($config)->handle();
+\My\Bootstrap\Simple::create('prod')->run();
