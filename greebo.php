@@ -71,6 +71,10 @@ class BasicContainer extends Container
       $class = sprintf('%s\\Controller\\%s', $c->app_vendor, $c->app_controller);
       return new $class($c);
     });
+    $this->template = $this->shared(function($c) {
+      $class = sprintf('%s\\Template\\%s', $c->app_vendor, $c->app_controller);
+      return new $class;
+    });
     $this->hooks = $this->shared(function($c) {
       return new Hooks;
     });
@@ -115,7 +119,12 @@ class Controller extends Base
 
     $result = (method_exists($this, $method = $action.'Action')) ? $this->$method() : null;
 
-    // TODO - blerou - fetch view to response
+    $this->response->content($this->template->fetch());
+  }
+
+  function set($slot, $val)
+  {
+    $this->template->set($slot, $val);
   }
 }
 
@@ -189,17 +198,40 @@ class Response extends Base
   }
 }
 
-class Template
+abstract class Template
 {
-  private $_vars = array();
+  private
+    $_slots = array(),
+    $_escaper = function($val) { return htmlentities($val, ENT_QUOTES, 'utf-8'); };
+
+  function get($slot)
+  {
+    return @$this->_slots[$slot] ?: null;
+  }
+
+  function set($slot, $val)
+  {
+    $this->_slot[$slot] = $val;
+  }
+
   function fetch()
   {
     ob_start();
-    echo $this->content();
+    $this->content();
     return ob_get_clean();
   }
   
-  function content() {}
+  abstract function content();
+  
+  function escaper(Closure $escaper)
+  {
+    $this->_escaper = $escaper;
+  }
+
+  function escape($val)
+  {
+    return (is_string($val)) ? $this->_escaper($val) : $val;
+  }
 }
 
 
