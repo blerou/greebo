@@ -1,9 +1,9 @@
 <?php
 
-require __DIR__.'/../../../../greebo.php';
-require __DIR__.'/../../../../greebo_extra.php';
-
 namespace My\Bootstrap;
+
+require __DIR__.'/../../../../../greebo.php';
+require __DIR__.'/../../../../../greebo_extra.php';
 
 class Simple extends \Greebo\Bootstrap
 {
@@ -11,7 +11,7 @@ class Simple extends \Greebo\Bootstrap
   {
     $this->_container->vendor = 'My';
     $this->_container->app = 'Simple';
-    $this->_container->lib_dir = dirname(__DIR__).'/lib';
+    $this->_container->lib_dir = dirname(__DIR__).'/..';
   }
   
   function prod()

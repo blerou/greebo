@@ -18,7 +18,7 @@ class BasicContainer extends Container
       return new $class($c);
     });
     $this->template = $this->shared(function($c) {
-      $class = sprintf('%s\\Template\\%s', $c->vendor, $c->app);
+      $class = sprintf('%s\\Template\\%s\\%s', $c->vendor, $c->app, $c->action);
       $class = new $class($c);
       $class->escaper(function($val) { return htmlentities($val, ENT_QUOTES, 'utf-8'); });
       return $class;
@@ -29,16 +29,12 @@ class BasicContainer extends Container
 abstract class Bootstrap
 {
   protected $_container;
-  
-  static function create($vendor, $app)
-  {
-    return new self($vendor, $app);
-  }
-  
+    
   function __construct($env)
   {
     $this->_container = $this->container();
     $this->_container->env = $env;
+    
     $this->init();
     $this->$env();
   }
@@ -52,7 +48,27 @@ abstract class Bootstrap
   
   function run()
   {
-    Greebo::create($this->_container)->unleash();
+    try
+    {
+      if ($this->_container->loader)
+      {
+        $this->_container->loader->registerNamespace($this->_container->vendor, $this->_container->lib_dir);
+        $this->_container->loader->register();
+      }
+    
+      Greebo::create($this->_container)->unleash();
+    }
+    catch (Exception $e)
+    {
+      if ($this->_container->debug)
+      {
+        // TODO show backtrace
+      }
+      else
+      {
+        // TODO render error500 page
+      }
+    }
   }
 }
 

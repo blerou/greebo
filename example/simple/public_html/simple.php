@@ -1,5 +1,6 @@
 <?php
 
-require dirname(__DIR__).'/lib/Greebo/Bootstrap/Simple.php';
+require dirname(__DIR__).'/lib/My/Bootstrap/Simple.php';
 
-\My\Bootstrap\Simple::create('prod')->run();
+$b = new \My\Bootstrap\Simple('prod');
+$b->run();

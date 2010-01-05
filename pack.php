@@ -36,11 +36,13 @@ function packing($c)
     '_status' => 's',
     '_content' => 'ct',
     '_slots' => 's',
+    '_slot' => 'sl',
     '_services' => 's',
     '_escaper' => 'e',
     '_hooks' => 'h',
     '$controller' => '$ct',
     '$callable' => '$ca',
+    '$container' => '$c',
     '$header' => '$h',
     '$cookie' => '$c',
     '$val' => '$v',
@@ -56,6 +58,8 @@ function packing($c)
     '$args' => '$a',
     '$def' => '$d',
     '$hook' => '$h',
+    '$subject' => '$s',
+    '$result' => '$r',
   );
   foreach ($rep as $f => $t)
     $c = str_replace($f, $t, $c);

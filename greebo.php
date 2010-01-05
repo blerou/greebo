@@ -9,8 +9,6 @@ class Greebo
   function __construct(Container $container)
   {
     $this->_container = $container;
-    $this->_container->loader->registerNamespace($this->_container->app_vendor, $this->_container->app_lib_dir);
-    $this->_container->loader->register();
   }
   
   static function create(Container $container)
