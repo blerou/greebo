@@ -1,14 +1,19 @@
 <?php
 
-require dirname(__DIR__).'/../greebo.php';
-
-class template extends \Greebo\Template { function content() { $this->escape('<script>alert("hello");</script>'); }}
+require dirname(__DIR__).'/../gessence.php';
 
 $c = new \Greebo\Container;
-$c->request = $c->shared(function($c) { return new \Greebo\Request($c); });
-$c->response = $c->shared(function($c) { return new \Greebo\Response($c); });
 $c->controller = function($c) {
-  return function() use ($c) { $c->response->content('<script>alert("hello");</script>'); };
+  return function($c) { $c->response->content('<script>alert("hello");</script>'); };
 };
 
-\Greebo\Greebo::create($c)->unleash();
+//require dirname(__DIR__).'/../gconveniences.php';
+//class template extends \Greebo\Template { function content() { $this->escape('<script>alert("hello");</script>'); }}
+//
+//$c->controller = function($c) {
+//  return function($c) { $c->response->content(call_user_func($c->template, $c)); };
+//};
+//$c->template = function($c) { return new template($c) };
+
+$g = new \Greebo\Greebo($c);
+$g->unleash();

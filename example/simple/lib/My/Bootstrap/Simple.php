@@ -2,8 +2,8 @@
 
 namespace My\Bootstrap;
 
-require __DIR__.'/../../../../../greebo.php';
-require __DIR__.'/../../../../../greebo_extra.php';
+require __DIR__.'/../../../../../gessence.php';
+require __DIR__.'/../../../../../gconveniences.php';
 
 class Simple extends \Greebo\Bootstrap
 {

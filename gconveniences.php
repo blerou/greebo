@@ -6,8 +6,22 @@ class BasicContainer extends Container
 {
   function init() {
     parent::init();
+
+    $this->vendor = 'Greebo';
+    $this->app = 'default';
     $this->loader = $this->shared(function($c) { return new ClassLoader; });
     $this->response = $this->shared(function($c) { return new BasicResponse($c); });
+    $this->action = $this->request->param('action', 'index');
+    $this->controller = $this->shared(function($c) {
+      $class = sprintf('%s\\Controller\\%s', $c->vendor, $c->app);
+      return new $class($c);
+    });
+    $this->template = $this->shared(function($c) {
+      $class = sprintf('%s\\Template\\%s\\%s', $c->vendor, $c->app, $c->action);
+      $class = new $class($c);
+      $class->escaper(function($val) { return htmlentities($val, ENT_QUOTES, 'utf-8'); });
+      return $class;
+    });
   }
 }
 
@@ -52,8 +66,33 @@ abstract class Bootstrap
   }
 }
 
-class Controller2 extends Controller
+class Controller extends Base
 {
+  function __invoke() {
+    try {
+      if (!method_exists($this, $method = $this->action.'Action')) {
+        $this->forward('error404');
+      }
+
+      if (false !== $this->$method() && $this->template) {
+        $this->response->content($this->template->fetch());
+      }
+    } catch (ForwardException $e) {
+      $this();
+    }
+  }
+
+  function error404Action() {
+    $this->response->status(404);
+    $this->response->content('Error 404 Page');
+    return false;
+  }
+
+  function forward($action) {
+    $this->action = 'error404';
+    throw new ForwardException;
+  }
+
   function assign($slot, $val) {
     $this->template->$slot = $val;
   }
@@ -77,6 +116,51 @@ class BasicResponse extends Response
     exit;
   }
 }
+
+class Template extends Base
+{
+  private
+    $_slots = array(),
+    $_slot,
+    $_escaper;
+
+  function __get($slot) {
+    return @$this->_slots[$slot] ?: null;
+  }
+
+  function __set($slot, $val) {
+    $this->_slots[$slot] = $val;
+  }
+
+  function rec($slot) {
+    $this->_slot = $slot;
+    ob_start();
+  }
+
+  function stop() {
+    $this->_slots[$this->_slot] = ob_get_clean();
+    $this->_slot = null;
+  }
+
+  function escaper(\Closure $escaper) {
+    $this->_escaper = $escaper;
+  }
+
+  function fetch() {
+    $this->_slots = $this->hooks->filter('template.slots', $this, $this->_slots);
+    ob_start();
+    $this->content();
+    return ob_get_clean();
+  }
+
+  function content() { }
+
+  function escape($val) {
+    return is_string($val) ? call_user_func($this->_escaper, $val) : $val;
+  }
+}
+
+class ForwardException extends Exception { }
 
 
 /**
