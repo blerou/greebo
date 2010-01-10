@@ -1,6 +1,9 @@
 <?php
 
-require dirname(__DIR__).'/lib/My/Bootstrap/Simple.php';
+error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', 'on');
 
-$b = new \My\Bootstrap\Simple('prod');
+require dirname(__DIR__).'/lib/My/simple/Bootstrap.php';
+
+$b = new \My\simple\Bootstrap('prod');
 $b->run();
