@@ -2,8 +2,6 @@
 
 namespace greebo\essence;
 
-Greebo::register();
-
 class Greebo
 {
   private $_container;
@@ -31,9 +29,14 @@ class Greebo
     $container->hooks->fire('shutdown', $container);
   }
 
-  static function register()
+  static function register($base_dir = null)
   {
-    set_include_path(realpath(dirname(__DIR__).'/../').PATH_SEPARATOR.get_include_path());
-    spl_autoload_register(function($class) { require ltrim(str_replace('\\', '/', $class.'.php'), '/'); });
+    if (null === $base_dir)
+      $base_dir = realpath(dirname(__DIR__).'/../');
+    spl_autoload_register(function($class) use($base_dir) {
+      $file = $base_dir.'/'.ltrim(str_replace('\\', '/', $class.'.php'), '/');
+      if (file_exists($file))
+        require $file;
+    });
   }
 }

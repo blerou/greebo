@@ -2,9 +2,9 @@
 
 namespace My\simple;
 
-require __DIR__.'/../../../../../lib/greebo/essence/Greebo.php';
-
-set_include_path(realpath(dirname(__DIR__).'/..').PATH_SEPARATOR.get_include_path());
+require __DIR__.'/../../../../../src/greebo/essence/Greebo.php';
+\greebo\essence\Greebo::register();
+\greebo\essence\Greebo::register(realpath(dirname(__DIR__).'/..'));
 
 class Bootstrap extends \greebo\conveniences\Bootstrap
 {
