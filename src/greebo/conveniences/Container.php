@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This file is part of the greebo conveniences pack.
+ *
+ * Copyright (c) Szabolcs Sulik <sulik.szabolcs@gmail.com>
+ */
+
 namespace greebo\conveniences;
 
 class Container extends \greebo\essence\Container

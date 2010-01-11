@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This file is part of the greebo essence pack.
+ *
+ * Copyright (c) Szabolcs Sulik <sulik.szabolcs@gmail.com>
+ */
+
 namespace greebo\essence;
 
 class Hooks
