@@ -10,20 +10,35 @@ namespace greebo\essence;
 
 class Hooks
 {
-  private $_hooks = array();
-  
-  function reg($hook, $callable) {
-    $this->_hooks[$hook][] = $callable;
-  }
-  
-  function fire($hook, $subject) {
-    foreach ((array)@$this->_hooks[$hook] as $callable)
-      $callable($subject);
-  }
-  
-  function filter($hook, $subject, $content) {
-    foreach ((array)@$this->_hooks[$hook] as $callable)
-      $content = $callable($subject, $content);
-    return $content;
-  }
+    private $_hooks = array();
+    
+    function reg($hook, $callable)
+    {
+        if (!is_array($this->_hooks[$hook])) {
+            $this->_hooks[$hook] = array();
+        }
+        $this->_hooks[$hook][] = $callable;
+    }
+    
+    function fire($hook, $subject)
+    {
+        if (isset($this->_hooks[$hook])) {
+            foreach ($this->_hooks[$hook] as $callable) {
+                $result = $callable($subject);
+                if (null !== $result) {
+                    return $result;
+                }
+            }
+        }
+    }
+    
+    function filter($hook, $subject, $content)
+    {
+        if (isset($this->_hooks[$hook])) {
+            foreach ($this->_hooks[$hook] as $callable) {
+                $content = $callable($subject, $content);
+            }
+        }
+        return $content;
+    }
 }
