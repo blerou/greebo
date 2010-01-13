@@ -12,7 +12,7 @@ class Response extends \greebo\essence\Response
 {
   function init()
   {
-    $this->header('Content-type', 'text/html; charset=utf8');
+    $this->header('Content-type', 'text/html; charset='.$this->container()->charset);
   }
   
   function redirect($uri)

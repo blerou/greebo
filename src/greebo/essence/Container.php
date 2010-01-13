@@ -79,6 +79,11 @@ class Container
         return $this->_services[$id];
     }
 
+    function __isset($id)
+    {
+        return isset($this->_services[$id]);
+    }
+
     /**
      * Wrap the given Closure with another which stores the result of the former.
      *

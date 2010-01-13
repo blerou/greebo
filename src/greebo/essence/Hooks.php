@@ -14,7 +14,7 @@ class Hooks
     
     function reg($hook, $callable)
     {
-        if (!is_array($this->_hooks[$hook])) {
+        if (!isset($this->_hooks[$hook])) {
             $this->_hooks[$hook] = array();
         }
         $this->_hooks[$hook][] = $callable;
@@ -22,22 +22,24 @@ class Hooks
     
     function fire($hook, $subject)
     {
-        if (isset($this->_hooks[$hook])) {
-            foreach ($this->_hooks[$hook] as $callable) {
-                $result = $callable($subject);
-                if (null !== $result) {
-                    return $result;
-                }
+        if (!isset($this->_hooks[$hook])) {
+            return;
+        }
+        foreach ($this->_hooks[$hook] as $callable) {
+            $result = $callable($subject);
+            if (null !== $result) {
+                return $result;
             }
         }
     }
     
     function filter($hook, $subject, $content)
     {
-        if (isset($this->_hooks[$hook])) {
-            foreach ($this->_hooks[$hook] as $callable) {
-                $content = $callable($subject, $content);
-            }
+        if (!isset($this->_hooks[$hook])) {
+            return $content;
+        }
+        foreach ($this->_hooks[$hook] as $callable) {
+            $content = $callable($subject, $content);
         }
         return $content;
     }

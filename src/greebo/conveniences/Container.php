@@ -16,7 +16,7 @@ class Container extends \greebo\essence\Container
 
         $this->vendor = 'Greebo';
         $this->app = 'default';
-        $this->loader = $this->shared(function($c) { return new ClassLoader; });
+        $this->charset = 'utf-8';
         $this->request = $this->shared(function($c) { return new Request; });
         $this->response = $this->shared(function($c) { return new Response($c); });
         $this->action_name = $this->request->param('action', 'index');
@@ -30,8 +30,8 @@ class Container extends \greebo\essence\Container
                 $class = 'greebo\\conveniences\\Template\\error404';
             }
             $template = new $class($c);
-            $template->escaper(function($val) {
-                return htmlentities($val, ENT_QUOTES, 'utf-8');
+            $template->escaper(function($val) use($c) {
+                return htmlentities($val, ENT_QUOTES, $c->charset);
             });
             return $template;
         });
