@@ -2,11 +2,13 @@
 
 namespace greebo\security;
 
-class ArrayEscaper extends Escaper implements ArrayAccess, Countable, Iterator
+class ArrayEscaper extends Escaper implements \ArrayAccess, \Countable, \Iterator
 {
+    private $_count;
+
     function key()
     {
-        return key($this->value);
+        return Escaper::escape(key($this->value), $this->escaper);
     }
 
     function current()
@@ -17,12 +19,18 @@ class ArrayEscaper extends Escaper implements ArrayAccess, Countable, Iterator
     function next()
     {
         next($this->value);
-        $this->count --;
+        $this->_count --;
     }
 
     function valid()
     {
-        return $this->count > 0;
+        return ($this->_count > 0);
+    }
+
+    function rewind()
+    {
+        reset($this->value);
+        $this->_count = count($this->value);
     }
 
     function offsetExists($offset)

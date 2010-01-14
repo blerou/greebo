@@ -14,7 +14,7 @@ class Container extends \greebo\essence\Container
     {
         parent::init();
 
-        $this->vendor = 'Greebo';
+        $this->vendor = 'greebo';
         $this->app = 'default';
         $this->charset = 'utf-8';
         $this->request = $this->shared(function($c) { return new Request; });

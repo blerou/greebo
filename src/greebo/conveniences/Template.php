@@ -42,7 +42,7 @@ class Template extends \greebo\essence\Base
         $this->_slot = null;
     }
 
-    function extends($class)
+    function extend($class)
     {
       $this->_decorator = $class;
     }
@@ -57,21 +57,35 @@ class Template extends \greebo\essence\Base
 
     function fetch()
     {
-        $this->_slots = $this->container()->event->filter('template.slots', $this, $this->_slots);
+        $this->setup();
+
+        $this->_slots = $this->container()->event
+            ->filter('template.slots', $this, $this->_slots);
 
         ob_start();
 
         $this->content();
-
+        
         if (null !== $this->_decorator) {
-            $decorator = new $this->_decorator($this->container());
+            $container = $this->container();
+            $class = sprintf(
+                '\\%s\\%s\\Template\\%s', 
+                $container->vendor, 
+                $container->app,
+                $this->_decorator
+            );
+            $decorator = new $class($this->container());
             foreach ($this->_slots as $name => $val) {
                 $decorator->$name = $val;
             }
-            $decorator->fetch();
+            echo $decorator->fetch();
         }
 
         return ob_get_clean();
+    }
+
+    function setup()
+    {
     }
 
     function content()

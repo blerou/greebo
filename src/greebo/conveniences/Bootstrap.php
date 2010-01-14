@@ -26,7 +26,7 @@ abstract class Bootstrap
     function container()
     {
         if (null === $this->_container) {
-            return new Container;
+            $this->_container = new Container;
         }
         return $this->_container;
     }

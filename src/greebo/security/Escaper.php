@@ -5,8 +5,8 @@ namespace greebo\security;
 abstract class Escaper extends \greebo\essence\Base
 {
     static private $_escapers = array(
-        'array' => 'ArrayEscaper',
-        'object' => 'ObjectEscaper',
+        'array' => '\\greebo\\security\\ArrayEscaper',
+        'object' => '\\greebo\\security\\ObjectEscaper',
     );
 
     protected 
@@ -33,12 +33,12 @@ abstract class Escaper extends \greebo\essence\Base
 
     static function register($container)
     {
-        $container->connect('template.slots', function ($template, $slots) {
+        $container->event->connect('template.slots', function ($template, $slots) {
             foreach ($slots as $name => $slot) {
                 if ($slot instanceof Escaper) {
                     continue;
                 }
-                $slots[$name] = self::escape($slot, $template->escaper());
+                $slots[$name] = Escaper::escape($slot, $template->escaper());
             }
             return $slots;
         });
