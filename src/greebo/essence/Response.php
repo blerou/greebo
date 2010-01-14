@@ -91,7 +91,7 @@ class Response extends Base
             call_user_func_array('setrawcookie', $cookie);
         }
         if (null !== $this->_content) {
-            echo $this->hooks->filter('response.content', $this, $this->_content);
+            echo $this->event->filter('response.content', $this, $this->_content);
         }
     }
     

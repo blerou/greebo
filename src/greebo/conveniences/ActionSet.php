@@ -21,7 +21,7 @@ class ActionSet extends \greebo\essence\Base
 
         if (false !== $this->$method() && $container->template) {
             $action = $this;
-            $container->hooks->reg('template.slots', function($template, $slots) use($action) {
+            $container->event->connect('template.slots', function($template, $slots) use($action) {
                 foreach ($action->assigned() as $name => $val) {
                     $slots[$name] = $val;
                 }

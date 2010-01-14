@@ -8,24 +8,24 @@
 
 namespace greebo\essence;
 
-class Hooks
+class Event 
 {
-    private $_hooks = array();
+    private $_events = array();
     
-    function reg($hook, $callable)
+    function connect($event, $callable)
     {
-        if (!isset($this->_hooks[$hook])) {
-            $this->_hooks[$hook] = array();
+        if (!isset($this->_events[$event])) {
+            $this->_events[$event] = array();
         }
-        $this->_hooks[$hook][] = $callable;
+        $this->_events[$event][] = $callable;
     }
     
-    function fire($hook, $subject)
+    function fire($event, $subject)
     {
-        if (!isset($this->_hooks[$hook])) {
+        if (!isset($this->_events[$event])) {
             return;
         }
-        foreach ($this->_hooks[$hook] as $callable) {
+        foreach ($this->_events[$event] as $callable) {
             $result = $callable($subject);
             if (null !== $result) {
                 return $result;
@@ -33,12 +33,12 @@ class Hooks
         }
     }
     
-    function filter($hook, $subject, $content)
+    function filter($event, $subject, $content)
     {
-        if (!isset($this->_hooks[$hook])) {
+        if (!isset($this->_events[$event])) {
             return $content;
         }
-        foreach ($this->_hooks[$hook] as $callable) {
+        foreach ($this->_events[$event] as $callable) {
             $content = $callable($subject, $content);
         }
         return $content;

@@ -13,6 +13,7 @@ class Template extends \greebo\essence\Base
     private
         $_slots = array(),
         $_slot,
+        $_decorator,
         $_escaper;
 
     function __get($slot)
@@ -39,6 +40,11 @@ class Template extends \greebo\essence\Base
         $this->_slot = null;
     }
 
+    function extends($class)
+    {
+      $this->_decorator = $class;
+    }
+
     function escaper(\Closure $escaper)
     {
         $this->_escaper = $escaper;
@@ -46,9 +52,20 @@ class Template extends \greebo\essence\Base
 
     function fetch()
     {
-        $this->_slots = $this->container()->hooks->filter('template.slots', $this, $this->_slots);
+        $this->_slots = $this->container()->event->filter('template.slots', $this, $this->_slots);
+
         ob_start();
+
         $this->content();
+
+        if (null !== $this->_decorator) {
+            $decorator = new $this->_decorator($this->container());
+            foreach ($this->_slots as $name => $val) {
+                $decorator->$name = $val;
+            }
+            $decorator->fetch();
+        }
+
         return ob_get_clean();
     }
 
@@ -58,8 +75,10 @@ class Template extends \greebo\essence\Base
 
     function escape($val)
     {
-        return is_string($val)
-            ? call_user_func($this->_escaper, $val)
-            : $val;
+        if (is_string($val)) {
+            $escaper = $this->_escaper;
+            return $escaper($val);
+        }
+        return $val;
     }
 }

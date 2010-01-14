@@ -16,7 +16,7 @@ namespace greebo\essence;
  *
  * @see http://github.com/fabpot/Pimple
  *
- * @property Hooks $hooks
+ * @property Event $events
  * @property Request $request
  * @property Response $response
  */
@@ -48,7 +48,7 @@ class Container
     {
         $this->request = $this->shared(function($c) { return new Request; });
         $this->response = $this->shared(function($c) { return new Response($c); });
-        $this->hooks = $this->shared(function($c) { return new Hooks; });
+        $this->event = $this->shared(function($c) { return new Event; });
     }
 
     /**
@@ -73,7 +73,7 @@ class Container
         if (!isset($this->_services[$id])) {
             return null;
         }
-        if (is_callable(@$this->_services[$id])) {
+        if (is_callable($this->_services[$id])) {
             return $this->_services[$id]($this);
         }
         return $this->_services[$id];

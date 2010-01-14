@@ -33,7 +33,7 @@ abstract class Bootstrap
     function run()
     {
         try {
-            $greebo = new Greebo($this->_container);
+            $greebo = $this->greebo();
             $greebo->unleash();
         } catch (Exception $e) {
             if ($this->_container->debug) {
@@ -42,5 +42,10 @@ abstract class Bootstrap
                 // TODO render error500 page
             }
         }
+    }
+
+    function greebo()
+    {
+      return new \greebo\essence\Greebo($this->_container);
     }
 }
