@@ -12,6 +12,7 @@ class Template extends \greebo\essence\Base
 {
     private
         $_slots = array(),
+        $_raw = array(),
         $_slot,
         $_decorator,
         $_escaper;
@@ -26,6 +27,7 @@ class Template extends \greebo\essence\Base
     function __set($slot, $val)
     {
         $this->_slots[$slot] = $val;
+        $this->_raw[$slot] = $val;
     }
 
     function slot($slot)
@@ -45,8 +47,11 @@ class Template extends \greebo\essence\Base
       $this->_decorator = $class;
     }
 
-    function escaper(\Closure $escaper)
+    function escaper(\Closure $escaper = null)
     {
+        if (null === $escaper) {
+            return $this->_escaper;
+        }
         $this->_escaper = $escaper;
     }
 
@@ -80,5 +85,12 @@ class Template extends \greebo\essence\Base
             return $escaper($val);
         }
         return $val;
+    }
+
+    function raw($slot)
+    {
+        return isset($this->_raw[$slot])
+            ? $this->_raw[$slot]
+            : null;
     }
 }

@@ -31,7 +31,7 @@ class Container extends \greebo\essence\Container
             }
             $template = new $class($c);
             $template->escaper(function($val) use($c) {
-                return htmlentities($val, ENT_QUOTES, $c->charset);
+                return htmlspecialchars($val, ENT_QUOTES, $c->charset);
             });
             return $template;
         });

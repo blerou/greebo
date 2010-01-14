@@ -8,16 +8,14 @@
 
 namespace greebo\conveniences;
 
-use greebo\essence\Greebo;
-
 abstract class Bootstrap
 {
-    protected $_container;
+    private $_container;
       
     function __construct($env)
     {
-        $this->_container = $this->container();
-        $this->_container->env = $env;
+        $container = $this->container();
+        $container->env = $env;
         
         $this->init();
         $this->$env();
@@ -27,7 +25,10 @@ abstract class Bootstrap
     
     function container()
     {
-        return new Container;
+        if (null === $this->_container) {
+            return new Container;
+        }
+        return $this->_container;
     }
     
     function run()
@@ -36,7 +37,7 @@ abstract class Bootstrap
             $greebo = $this->greebo();
             $greebo->unleash();
         } catch (Exception $e) {
-            if ($this->_container->debug) {
+            if ($this->container()->debug) {
                 // TODO show backtrace
             } else {
                 // TODO render error500 page
@@ -46,6 +47,6 @@ abstract class Bootstrap
 
     function greebo()
     {
-      return new \greebo\essence\Greebo($this->_container);
+      return new \greebo\essence\Greebo($this->container());
     }
 }
