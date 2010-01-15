@@ -26,18 +26,45 @@
 
 namespace greebo\security;
 
+/**
+ * Escaper for an object variable.
+ *
+ * @package    greebo
+ * @subpackage security
+ * @author     blerou
+ */
 class ObjectEscaper extends Escaper implements Countable
 {
+    /**
+     * Object property getter.
+     *
+     * Return the escaped value of the property.
+     *
+     * @param  string $name
+     * @return mixed
+     */
     function __get($name)
     {
         return Escaper::escape($this->$value->$name, $this->escaper);
     }
-
+    /**
+     * Object method call.
+     *
+     * Return the escaped value of the property.
+     *
+     * @param  string $name
+     * @return mixed
+     */
     function __call($method, $args)
     {
         return Escaper::escape(call_user_func_array(array($this->value, $method), $args), $this->escaper);
     }
 
+    /**
+     * Object property count.
+     *
+     * @return int
+     */
     function count()
     {
         return count($this->value);

@@ -26,57 +26,141 @@
 
 namespace greebo\security;
 
+/**
+ * Escaper for an array variable.
+ *
+ * @package    greebo
+ * @subpackage security
+ * @author     blerou
+ */
 class ArrayEscaper extends Escaper implements \ArrayAccess, \Countable, \Iterator
 {
+    /**
+     * hold the length of array
+     * 
+     * @var int
+     */
     private $_count;
 
+    /**
+     * Current element's key getter
+     *
+     * @see Iterator
+     *
+     * @return mixed
+     */
     function key()
     {
         return Escaper::escape(key($this->value), $this->escaper);
     }
 
+    /**
+     * Current element's value getter
+     *
+     * @see Iterator
+     *
+     * @return mixed
+     */
     function current()
     {
         return Escaper::escape(current($this->value), $this->escaper);
     }
 
+    /**
+     * Go to the next element in the array
+     *
+     * @see Iterator
+     */
     function next()
     {
         next($this->value);
         $this->_count --;
     }
 
+    /**
+     * Check the current element
+     *
+     * @see Iterator
+     *
+     * @return bool
+     */
     function valid()
     {
         return ($this->_count > 0);
     }
 
+    /**
+     * Reset the array
+     *
+     * @see Iterator
+     */
     function rewind()
     {
         reset($this->value);
         $this->_count = count($this->value);
     }
 
+    /**
+     * Check the given offset in the array
+     *
+     * @see ArrayAccess
+     *
+     * @param  mixed $offset
+     * @return bool
+     */
     function offsetExists($offset)
     {
         return isset($this->value[$offset]);
     }
 
+    /**
+     * Return the escaped value on the given offset
+     *
+     * @see ArrayAccess
+     *
+     * @param  mixed $offset
+     * @return mixed
+     */
     function offsetGet ($offset)
     {
         return Escaper::escape($this->value[$offset], $this->escaper);
     }
 
+    /**
+     * Array value setter.
+     *
+     * Escapers are immutable.
+     *
+     * @see ArrayAccess
+     *
+     * @throws EscaperException
+     */
     function offsetSet($offset, $value)
     {
         throw new EscaperException();
     }
 
+    /**
+     * Array offset remover.
+     *
+     * Escapers are immutable.
+     *
+     * @see ArrayAccess
+     *
+     * @throws EscaperException
+     */
     function offsetUnset($offset)
     {
         throw new EscaperException();
     }
 
+    /**
+     * return with the length of the array
+     *
+     * @see Countable
+     *
+     * @return int
+     */
     function count()
     {
         return count($this->value);

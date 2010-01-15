@@ -26,6 +26,13 @@
 
 namespace greebo\security;
 
+/**
+ * General escaper exception
+ *
+ * @package    greebo
+ * @subpackage security
+ * @author     blerou
+ */
 class EscaperException extends \Exception
 {
 }

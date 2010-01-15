@@ -26,6 +26,19 @@
 
 namespace greebo\security;
 
+/**
+ * Base escaper class
+ *
+ * Every escaper holds the wrapped value and the escaper closure.
+ * It's possibly to change escaper in different contexts (html, javascript).
+ *
+ * It also provides a simple interface (::register() method) what
+ * attach the automatic escaping to the template values filter.
+ *
+ * @package    greebo
+ * @subpackage security
+ * @author     blerou
+ */
 abstract class Escaper extends \greebo\essence\Base
 {
     static private $_escapers = array(
@@ -33,29 +46,60 @@ abstract class Escaper extends \greebo\essence\Base
         'object' => '\\greebo\\security\\ObjectEscaper',
     );
 
-    protected 
-        $value,
-        $escaper;
+    /**
+     * the wrapped value
+     *
+     * @var mixed
+     */
+    protected $value;
 
+    /**
+     * the escaper closure
+     *
+     * @var Closure
+     */
+    protected $escaper;
+
+    /**
+     * Constructor
+     *
+     * @param  mixed $value
+     * @param  Closure $escaper
+     */
     function __construct($value, \Closure $escaper)
     {
         $this->value = $value;
         $this->escaper = $escaper;
     }
 
-    static function escape($slot, \Closure $escaper)
+    /**
+     * Common escaper method
+     *
+     * It escapes the given value with the given escaper,
+     * or create an according Escaper instance.
+     *
+     * @param  mixed $value
+     * @param  Closure $escaper
+     * @return mixed             The escaped value or an Escaper instance
+     */
+    static function escape($value, \Closure $escaper)
     {
-        if (is_scalar($slot)) {
-            return $escaper($slot);
+        if (is_scalar($value)) {
+            return $escaper($value);
         }
-        $type = gettype($slot);
+        $type = gettype($value);
         if (!isset(self::$_escapers[$type])) {
-            return $slot;
+            return $value;
         }
-        return new self::$_escapers[$type]($slot, $escaper);
+        return new self::$_escapers[$type]($value, $escaper);
     }
 
-    static function register($container)
+    /**
+     * Register autoescaping on template variables.
+     * 
+     * @param Container $container
+     */
+    static function register(\greebo\essence\Container $container)
     {
         $container->event->connect('template.slots', function ($template, $slots) {
             foreach ($slots as $name => $slot) {

@@ -26,6 +26,14 @@
 
 namespace greebo\security;
 
+/**
+ *
+ *
+ *
+ * @package    greebo
+ * @subpackage security
+ * @author     blerou
+ */
 abstract class Bootstrap extends \greebo\conveniences\Bootstrap
 {
     function __construct($env)
