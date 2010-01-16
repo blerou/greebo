@@ -35,11 +35,17 @@ namespace greebo\security;
  * It also provides a simple interface (::register() method) what
  * attach the automatic escaping to the template values filter.
  *
+ * To enable autoescaping put the followings to the end of
+ * init method of your app's Bootstrap class:
+ * <code>
+ *   \greebo\security\Escaper::register($this->container()->event);
+ * </code>
+ *
  * @package    greebo
  * @subpackage security
  * @author     blerou
  */
-abstract class Escaper extends \greebo\essence\Base
+abstract class Escaper
 {
     static private $_escapers = array(
         'array' => '\\greebo\\security\\ArrayEscaper',
@@ -97,11 +103,11 @@ abstract class Escaper extends \greebo\essence\Base
     /**
      * Register autoescaping on template variables.
      * 
-     * @param Container $container
+     * @param \greebo\essence\Event $event
      */
-    static function register(\greebo\essence\Container $container)
+    static function register(\greebo\essence\Event $event)
     {
-        $container->event->connect('template.slots', function ($template, $slots) {
+        $event->connect('template.slots', function ($template, $slots) {
             foreach ($slots as $name => $slot) {
                 if ($slot instanceof Escaper) {
                     continue;
@@ -111,4 +117,17 @@ abstract class Escaper extends \greebo\essence\Base
             return $slots;
         });
     }
+}
+
+/**
+ * General escaper exception
+ *
+ * It is strongly coupled to Escaper, so this is a cool place for it.
+ *
+ * @package    greebo
+ * @subpackage security
+ * @author     blerou
+ */
+class EscaperException extends \Exception
+{
 }

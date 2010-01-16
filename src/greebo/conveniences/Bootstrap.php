@@ -36,7 +36,9 @@ abstract class Bootstrap
         $container->env = $env;
         
         $this->init();
-        $this->$env();
+        if (method_exists($this, $env)) {
+            $this->$env();
+        }
     }
     
     abstract function init();

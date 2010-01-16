@@ -26,26 +26,54 @@
 
 namespace greebo\conveniences;
 
-class Template extends \greebo\essence\Base
+class Template
 {
     private
         $_slots = array(),
         $_raw = array(),
         $_slot,
-        $_decorator,
-        $_escaper;
+        $_escaper,
+        $_event;
+
+    function __construct(\greebo\essence\Event $event)
+    {
+        $this->_event = $event;
+    }
 
     function __get($slot)
     {
-        return isset($this->_slots[$slot])
-            ? $this->_slots[$slot]
-            : null;
+        if (!isset($this->_slots[$slot])) {
+            throw new TemplateException('Invalid slot: '.$this->escape($slot));
+        }
+        return $this->_slots[$slot];
     }
 
     function __set($slot, $val)
     {
-        $this->_slots[$slot] = $val;
-        $this->_raw[$slot] = $val;
+        $this->assign($slot, $val);
+    }
+
+    function __isset($slot)
+    {
+        return isset($this->_slots[$slot]);
+    }
+
+    function assign($slot, $val = null)
+    {
+        if (is_array($slot)) {
+            foreach ($slot as $name => $val) {
+                $this->assign($name, $val);
+            }
+        } else {
+            $this->_slots[$slot] = $val;
+            $this->_raw[$slot] = $val;
+        }
+        return $this;
+    }
+
+    function __unset($slot)
+    {
+        unset($this->_slots[$slot], $this->_raw[$slot]);
     }
 
     function slot($slot)
@@ -56,13 +84,9 @@ class Template extends \greebo\essence\Base
 
     function stop()
     {
-        $this->_slots[$this->_slot] = ob_get_clean();
+        $value = ob_get_clean();
+        $this->assign($this->_slot, $value);
         $this->_slot = null;
-    }
-
-    function extend($class)
-    {
-      $this->_decorator = $class;
     }
 
     function escaper(\Closure $escaper = null)
@@ -77,29 +101,27 @@ class Template extends \greebo\essence\Base
     {
         $this->setup();
 
-        $this->_slots = $this->container()->event
+        $this->_slots = $this->_event
             ->filter('template.slots', $this, $this->_slots);
 
         ob_start();
 
         $this->content();
-        
-        if (null !== $this->_decorator) {
-            $container = $this->container();
-            $class = sprintf(
-                '\\%s\\%s\\Template\\%s', 
-                $container->vendor, 
-                $container->app,
-                $this->_decorator
-            );
-            $decorator = new $class($this->container());
-            foreach ($this->_slots as $name => $val) {
-                $decorator->$name = $val;
+
+        $content = trim(ob_get_clean());
+       
+        $r = new \ReflectionObject($this);
+        $p = $r->getParentClass();
+        if ($p && $p->name != 'greebo\\conveniences\\Template') {
+            if ($content) {
+                $this->assign('content', $content.$this->content);
             }
-            echo $decorator->fetch();
+            $content = $p->newInstance($this->_event)
+                ->assign($this->_raw)
+                ->fetch();
         }
 
-        return ob_get_clean();
+        return $content;
     }
 
     function setup()
@@ -121,8 +143,14 @@ class Template extends \greebo\essence\Base
 
     function raw($slot)
     {
-        return isset($this->_raw[$slot])
-            ? $this->_raw[$slot]
-            : null;
+        if (!isset($this->_raw[$slot])) {
+            throw new TemplateException('Invalid slot: '.$this->escape($slot));
+        }
+        return $this->_raw[$slot];
     }
+}
+
+
+class TemplateException extends \Exception
+{
 }

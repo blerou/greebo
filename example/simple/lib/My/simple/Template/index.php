@@ -1,6 +1,6 @@
-<?php namespace My\simple\Template; class index extends \greebo\conveniences\Template { function content() { ?>
+<?php namespace My\simple\Template; class index extends layout { function content() { ?>
 
-<?php $this->extend('layout'); ?>
+<?php $this->title = 'from index template'; ?>
 
 <?php $this->slot('content') ?>
 <form action="simple.php?action=post" method="post">
