@@ -30,14 +30,13 @@ class Container extends \greebo\essence\Container
 {
     function init()
     {
-        parent::init();
-
         $this->vendor = 'greebo';
         $this->app = 'default';
         $this->charset = 'utf-8';
 
+        $this->event = $this->shared(function($c) { return new \greebo\essence\Event; });
         $this->request = $this->shared(function($c) { return new Request; });
-        $this->response = $this->shared(function($c) { return new Response($c); });
+        $this->response = $this->shared(function($c) { return new Response($c->event); });
 
         $this->action_name = $this->request->param('action', 'index');
         $this->action = $this->shared(function($c) {

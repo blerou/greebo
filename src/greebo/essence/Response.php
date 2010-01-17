@@ -43,14 +43,20 @@ namespace greebo\essence;
  * @property int         $_status   Store the status code
  * @property string|null $_content  Stores the response body
  */
-class Response extends Base
+class Response
 {
     private 
         $_header = array(),
         $_cookie = array(),
         $_status = 200,
-        $_content = null;
-    
+        $_content = null,
+        $_event;
+
+    function __construct(Event $event)
+    {
+        $this->_event = $event;
+    }
+
     /**
      * Setter of status code
      *
@@ -109,20 +115,7 @@ class Response extends Base
             call_user_func_array('setrawcookie', $cookie);
         }
         if (null !== $this->_content) {
-            echo $this->event->filter('response.content', $this, $this->_content);
+            echo $this->_event->filter('response.content', $this, $this->_content);
         }
-    }
-    
-    /**
-     * Proxy method to hit the container
-     *
-     * @param  string $name
-     * @return mixed
-     */
-    function __get($name)
-    {
-      return isset($this->container()->$name)
-          ? $this->container()->$name
-          : null;
     }
 }

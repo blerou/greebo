@@ -65,7 +65,7 @@ class Container
     function init()
     {
         $this->request = $this->shared(function($c) { return new Request; });
-        $this->response = $this->shared(function($c) { return new Response($c); });
+        $this->response = $this->shared(function($c) { return new Response($c->event); });
         $this->event = $this->shared(function($c) { return new Event; });
     }
 
