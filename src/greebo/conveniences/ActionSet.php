@@ -26,12 +26,14 @@
 
 namespace greebo\conveniences;
 
-class ActionSet extends \greebo\essence\Base
+class ActionSet
 {
     private $_vars = array();
+    private $_container;
     
     function __invoke($container)
     {
+        $this->_container = $container;
         if (!method_exists($this, $method = $container->action_name.'Action')) {
             $container->action_name = 'error404';
             $method = 'error404Action';
@@ -75,11 +77,14 @@ class ActionSet extends \greebo\essence\Base
 
     function __get($name)
     {
-        return @$this->container()->$name ?: null;
+        if (!isset($this->_container->$name)) {
+            throw new \InvalidArgumentException('Invalid service: '.$name);
+        }
+        return $this->_container->$name;
     }
 
     function __set($name, $val)
     {
-        $this->container()->$name = $val;
+        $this->_container->$name = $val;
     }
 }
