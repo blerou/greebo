@@ -1,7 +1,0 @@
-Greebo is a PHP microframework / framework essence written in PHP 5.3.
-
-It was inspired by [Camping microframework](http://en.wikipedia.org/wiki/Camping_(microframework) Camping microframework). I have also used concepts from symfony ( http://www.symfony-project.org/ ) and django ( http://www.djangoproject.com/ ).
-
-# Concept:
-
-Every request is wrapped by a Request object, and at the end of the process it sends back a Response.

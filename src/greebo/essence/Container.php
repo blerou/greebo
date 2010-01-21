@@ -34,7 +34,7 @@ namespace greebo\essence;
  *
  * @see http://github.com/fabpot/Pimple
  *
- * @property Event $events
+ * @property Event $event
  * @property Request $request
  * @property Response $response
  */
