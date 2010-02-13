@@ -33,7 +33,7 @@ namespace greebo\guards;
  * @subpackage guards
  * @author     blerou
  */
-class ObjectEscaper extends Escaper implements Countable
+class ObjectEscaper extends Escaper implements \Countable
 {
     /**
      * Object property getter.
@@ -45,8 +45,23 @@ class ObjectEscaper extends Escaper implements Countable
      */
     function __get($name)
     {
-        return Escaper::escape($this->$value->$name, $this->escaper);
+        return Escaper::escape($this->value->$name, $this->escaper);
     }
+
+    /**
+     * Property setter
+     *
+     * Escaped object's property cannot be set.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @throws \greebo\guards\EscaperException
+     */
+    function __set($name, $value)
+    {
+        throw new EscaperException('Escaped object\'s property cannot be set.');
+    }
+
     /**
      * Object method call.
      *

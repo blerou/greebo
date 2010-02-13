@@ -86,17 +86,27 @@ abstract class Escaper
      *
      * @param  mixed $value
      * @param  Closure $escaper
-     * @return mixed             The escaped value or an Escaper instance
+     * @return mixed  The escaped value or an Escaper instance
+     * @throws EscaperException
      */
     static function escape($value, \Closure $escaper)
     {
-        if (is_scalar($value)) {
-            return $escaper($value);
-        }
-        $type = gettype($value);
-        if (!isset(self::$_escapers[$type])) {
+        if ($value instanceof Escaper) {
             return $value;
         }
+
+        if (is_scalar($value)) {
+            if (is_string($value)) {
+                return $escaper($value);
+            }
+            return $value;
+        }
+
+        $type = gettype($value);
+        if (!isset(self::$_escapers[$type])) {
+            throw new EscaperException('Unescapeable type: '.$type);
+        }
+        
         return new self::$_escapers[$type]($value, $escaper);
     }
 
@@ -109,9 +119,6 @@ abstract class Escaper
     {
         $event->connect('template.slots', function ($template, $slots) {
             foreach ($slots as $name => $slot) {
-                if ($slot instanceof Escaper) {
-                    continue;
-                }
                 $slots[$name] = Escaper::escape($slot, $template->escaper());
             }
             return $slots;
