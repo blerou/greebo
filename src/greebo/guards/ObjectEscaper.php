@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the greebo security pack.
+ * This file is part of the greebo guards pack.
  *
  * Copyright (c) 2010 Szabolcs Sulik <sulik.szabolcs@gmail.com>
  *
@@ -24,13 +24,13 @@
  * THE SOFTWARE.
  */
 
-namespace greebo\security;
+namespace greebo\guards;
 
 /**
  * Escaper for an object variable.
  *
  * @package    greebo
- * @subpackage security
+ * @subpackage guards
  * @author     blerou
  */
 class ObjectEscaper extends Escaper implements Countable

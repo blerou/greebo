@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the greebo security pack.
+ * This file is part of the greebo guards pack.
  *
  * Copyright (c) 2010 Szabolcs Sulik <sulik.szabolcs@gmail.com>
  *
@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace greebo\security;
+namespace greebo\guards;
 
 /**
  * Base escaper class
@@ -38,18 +38,18 @@ namespace greebo\security;
  * To enable autoescaping put the followings to the end of
  * init method of your app's Bootstrap class:
  * <code>
- *   \greebo\security\Escaper::register($this->container()->event);
+ *   \greebo\guards\Escaper::register($this->container()->event);
  * </code>
  *
  * @package    greebo
- * @subpackage security
+ * @subpackage guards
  * @author     blerou
  */
 abstract class Escaper
 {
     static private $_escapers = array(
-        'array' => '\\greebo\\security\\ArrayEscaper',
-        'object' => '\\greebo\\security\\ObjectEscaper',
+        'array' => '\\greebo\\guards\\ArrayEscaper',
+        'object' => '\\greebo\\guards\\ObjectEscaper',
     );
 
     /**
@@ -125,7 +125,7 @@ abstract class Escaper
  * It is strongly coupled to Escaper, so this is a cool place for it.
  *
  * @package    greebo
- * @subpackage security
+ * @subpackage guards
  * @author     blerou
  */
 class EscaperException extends \Exception

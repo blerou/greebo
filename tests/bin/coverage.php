@@ -24,9 +24,9 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__
 $c = new lime_coverage($h);
 $c->extension = '.php';
 $c->verbose = true;
-$c->base_dir = realpath(dirname(__FILE__).'/../../lib');
+$c->base_dir = realpath(dirname(__FILE__).'/../../src');
 
-foreach (new DirectoryIterator(dirname(__FILE__).'/../../lib') as $file)
+foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__FILE__).'/../../src'), RecursiveIteratorIterator::LEAVES_ONLY) as $file)
 {
   if (preg_match('/\.php$/', $file))
   {
