@@ -1,28 +1,40 @@
-1;3R
 <?php
 
 require_once __DIR__.'/../../bootstrap.php';
-require __DIR__.'/../../../lib/greebo/test/Response.php';
 
-use greebo\essence\Container as Container;
+use greebo\essence\Container;
 use greebo\conveniences\ActionSet;
 
-$t = new LimeTest(2);
+$t = new lime_test(5);
 
 $container = new Container;
-$container->response = $container->shared(function($c) { return new \greebo\test\Response($c); });
-$container->action = function($c) { return new ActionSet($c); };
-$container->action_name = 'error404';
+$action = new ActionSet;
 
-$a = $container->action;
 
-$t->diag('error404 page - default');
+$t->diag('action execution');
 
-$t->same($container, $a->container(), '->container() returns global container');
 
-$a($container);
+$action($container);
+$t->is($container->action_name, 'error404', 'error404 action executed on undefined action');
 
-$response = $container->response;
+$action = new \greebo\test\ActionSet($t);
 
-$t->is($response->get_status(), 404, '->error404Action() set response status code');
-$t->is($response->get_content(), 'Error 404 Page', '->error404Action() set response content');
+$container->action_name = 'index';
+$container->foo = 'bar';
+$action($container);
+$t->ok($container->foo instanceof stdClass, 'container setter works properly');
+
+
+$t->diag('template variable assignments');
+
+
+$container->action_name = 'assignments';
+$container->template = new \greebo\test\Template($container->event);
+
+$action($container);
+$excepted = array('foo' => 'bar', 'baz' => true);
+
+$container->event->connect('template.slots', function($template, $slots) use($t, $excepted) {
+   $t->ok($slots === $excepted, '->assign(), ->assigned() work properly');
+});
+$container->template->fetch();

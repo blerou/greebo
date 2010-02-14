@@ -34,21 +34,27 @@ class ActionSet
     function __invoke($container)
     {
         $this->_container = $container;
-        if (!method_exists($this, $method = $container->action_name.'Action')) {
+
+        $method = $container->action_name.'Action';
+        if (!method_exists($this, $method)) {
             $container->action_name = 'error404';
             $method = 'error404Action';
         }
 
-        if (false !== $this->$method() && $container->template) {
-            $action = $this;
-            $container->event->connect('template.slots', function($template, $slots) use($action) {
-                foreach ($action->assigned() as $name => $val) {
-                    $slots[$name] = $val;
-                }
-                return $slots;
-            });
-            $container->response->content($container->template->fetch());
+        if (false === $this->$method()) {
+            return;
         }
+
+        $template = $container->template;
+
+        if (!$template) {
+            return;
+        }
+
+        foreach ($this->_vars as $name => $value) {
+            $template->$name = $value;
+        }
+        $container->response->content($template->fetch());
     }
     
 
@@ -59,27 +65,13 @@ class ActionSet
         return false;
     }
 
-    function assign($slot, $val)
+    function assign($var, $value)
     {
-        $this->_vars[$slot] = $val;
-    }
-
-    function assigned()
-    {
-        return $this->_vars;
-    }
-    
-    function sendback($val)
-    {
-        $this->response->content($val);
-        return false;
+        $this->_vars[$var] = $value;
     }
 
     function __get($name)
     {
-        if (!isset($this->_container->$name)) {
-            throw new \InvalidArgumentException('Invalid service: '.$name);
-        }
         return $this->_container->$name;
     }
 
