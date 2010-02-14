@@ -63,7 +63,7 @@ class Greebo
         $container->event->fire('greebo.startup', $container);
         
         if (!is_callable($action = $container->action)) {
-            $action = function($c) {
+            $action = $container->action = function($c) {
                 $c->response->status(404);
             };
         }
