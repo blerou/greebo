@@ -35,6 +35,7 @@ class Request extends \greebo\essence\Request
 
   function ajax()
   {
-    return ('XMLHttpRequest' === $_SERVER['HTTP_X_REQUESTED_WITH']);
+    return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
+      && ('XMLHttpRequest' === $_SERVER['HTTP_X_REQUESTED_WITH']));
   }
 }
