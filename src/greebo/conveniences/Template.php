@@ -42,10 +42,9 @@ class Template
 
     function __get($slot)
     {
-        if (!isset($this->_slots[$slot])) {
-            throw new TemplateException('Invalid slot: '.$this->escape($slot));
-        }
-        return $this->_slots[$slot];
+        return isset($this->_slots[$slot])
+            ? $this->_slots[$slot]
+            : null;
     }
 
     function __set($slot, $val)
@@ -76,7 +75,7 @@ class Template
         unset($this->_slots[$slot], $this->_raw[$slot]);
     }
 
-    function slot($slot)
+    function rec($slot)
     {
         $this->_slot = $slot;
         ob_start();
@@ -143,14 +142,8 @@ class Template
 
     function raw($slot)
     {
-        if (!isset($this->_raw[$slot])) {
-            throw new TemplateException('Invalid slot: '.$this->escape($slot));
-        }
-        return $this->_raw[$slot];
+        return isset($this->_raw[$slot])
+            ? $this->_raw[$slot]
+            : null;
     }
-}
-
-
-class TemplateException extends \Exception
-{
 }

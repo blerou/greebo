@@ -46,7 +46,7 @@ $t->diag('::register()');
 
 
 $event = new Event();
-$template = new \greebo\test\Template($event);
+$template = new Template($event);
 $template->escaper($escaper);
 Escaper::register($event);
 $event->connect('template.slots', function($template, $slots) use($t) {

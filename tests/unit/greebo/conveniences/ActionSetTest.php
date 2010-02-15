@@ -4,6 +4,7 @@ require_once __DIR__.'/../../bootstrap.php';
 
 use greebo\essence\Container;
 use greebo\conveniences\ActionSet;
+use greebo\conveniences\Template;
 
 $t = new lime_test(5);
 
@@ -29,7 +30,7 @@ $t->diag('template variable assignments');
 
 
 $container->action_name = 'assignments';
-$container->template = new \greebo\test\Template($container->event);
+$container->template = new Template($container->event);
 
 $action($container);
 $excepted = array('foo' => 'bar', 'baz' => true);
@@ -37,4 +38,4 @@ $excepted = array('foo' => 'bar', 'baz' => true);
 $container->event->connect('template.slots', function($template, $slots) use($t, $excepted) {
    $t->ok($slots === $excepted, '->assign(), ->assigned() work properly');
 });
-$container->template->fetch();
+$a = $container->template->fetch();
