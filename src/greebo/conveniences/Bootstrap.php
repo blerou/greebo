@@ -56,11 +56,13 @@ abstract class Bootstrap
         try {
             $greebo = $this->greebo();
             $greebo->unleash();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if ($this->container()->debug) {
-                // TODO show backtrace
+                $this->container()->response
+                    ->status(200)->content($this->backtrace())->send();
             } else {
-                // TODO render error500 page
+                $this->container()->response
+                    ->status(500)->content(null)->send();
             }
         }
     }
@@ -68,5 +70,15 @@ abstract class Bootstrap
     function greebo()
     {
       return new \greebo\essence\Greebo($this->container());
+    }
+
+    function backtrace()
+    {
+        $result = '';
+        foreach (debug_backtrace() as $row) {
+            $result .= $row['file'];
+            // TODO create simple response
+        }
+        return $result;
     }
 }
