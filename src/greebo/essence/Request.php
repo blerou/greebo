@@ -45,6 +45,7 @@ namespace greebo\essence;
  * @method array  files(string $name, $def = null)   getter of an uploaded file ($_FILES)
  * @method mix    get(string $name, $def = null)     getter of a $_GET index
  * @method mix    post(string $name, $def = null)    getter of a $_POST index
+ * @method mix    server(string $name, $def = null)  getter of a $_SERVER index (->header() is a shortcut)
  */
 class Request
 {
