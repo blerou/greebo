@@ -61,10 +61,12 @@ class Response
      * Setter of status code
      *
      * @param  int $status
+     * @return \greebo\essence\Response
      */
     function status($status)
     {
         $this->_status = (int)$status;
+        return $this;
     }
     
     /**
@@ -72,10 +74,12 @@ class Response
      *
      * @param  string $name
      * @param  string $val
+     * @return \greebo\essence\Response
      */
     function header($name, $val)
     {
         $this->_header[$name] = $val;
+        return $this;
     }
     
     /**
@@ -84,20 +88,24 @@ class Response
      * Uses same API as setrawcookie() function.
      *
      * @see setrawcookie
+     * @return \greebo\essence\Response
      */
     function cookie()
     {
         $this->_cookie[] = func_get_args();
+        return $this;
     }
     
     /**
      * Setter of the response body
      *
      * @param  string $content
+     * @return \greebo\essence\Response
      */
     function content($content)
     {
         $this->_content = $content;
+        return $this;
     }
     
     /**

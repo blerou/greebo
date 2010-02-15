@@ -28,16 +28,15 @@ namespace greebo\conveniences;
 
 class Response extends \greebo\essence\Response
 {
-  function init()
+  function __construct(\greebo\essence\Event $event)
   {
+    parent::__construct($event);
     $this->header('Content-type', 'text/html; charset='.$this->container()->charset);
   }
   
   function redirect($uri)
   {
-    $this->header('Location', $uri);
-    $this->content = null;
-    $this->send();
+    $this->header('Location', $uri)->content(null)->send();
     exit;
   }
 }
