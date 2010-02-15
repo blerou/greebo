@@ -31,12 +31,12 @@ class Container extends \greebo\essence\Container
     function init()
     {
         $this->vendor = 'greebo';
-        $this->app = 'default';
+        $this->app = 'conveniences';
         $this->charset = 'utf-8';
 
         $this->event = $this->shared(function($c) { return new \greebo\essence\Event; });
         $this->request = $this->shared(function($c) { return new Request; });
-        $this->response = $this->shared(function($c) { return new Response($c->event); });
+        $this->response = $this->shared(function($c) { return new Response($c->event, $c->charset); });
 
         $this->action_name = $this->request->param('action', 'index');
         $this->action = $this->shared(function($c) {
@@ -47,7 +47,7 @@ class Container extends \greebo\essence\Container
         $this->template = $this->shared(function($c) {
             $class = sprintf('%s\\%s\\Template\\%s', $c->vendor, $c->app, $c->action_name);
             if (!class_exists($class)) {
-                $class = 'greebo\\conveniences\\Template\\error404';
+                throw new ContainerException;
             }
             $template = new $class($c->event);
             $template->escaper(function($val) use($c) {
@@ -56,4 +56,8 @@ class Container extends \greebo\essence\Container
             return $template;
         });
     }
+}
+
+class ContainerException extends \Exception
+{
 }
