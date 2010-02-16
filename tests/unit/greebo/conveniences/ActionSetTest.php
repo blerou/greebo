@@ -6,7 +6,7 @@ use greebo\essence\Container;
 use greebo\conveniences\ActionSet;
 use greebo\conveniences\Template;
 
-$t = new lime_test(5);
+$t = new lime_test(7);
 
 $container = new Container;
 $action = new ActionSet;
@@ -39,3 +39,16 @@ $container->event->connect('template.slots', function($template, $slots) use($t,
    $t->ok($slots === $excepted, '->assign(), ->assigned() work properly');
 });
 $a = $container->template->fetch();
+
+
+$t->diag('sendjson');
+
+
+$result = $action->sendjson(array('foo' => 'bar'));
+$t->is_deeply($result, false, '->sendjson() always returns false');
+
+ob_start();
+$_SERVER['SERVER_PROTOCOL'] = '';
+$container->response->send();
+$result = ob_get_clean();
+$t->is($result, json_encode(array('foo' => 'bar')), '->sendjson() set json encoded data into the response');

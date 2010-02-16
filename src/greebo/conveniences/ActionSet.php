@@ -79,4 +79,11 @@ class ActionSet
     {
         $this->_container->$name = $val;
     }
+
+    function sendjson($data)
+    {
+        $this->response->header('Content-Type', 'application/json');
+        $this->response->content(json_encode($data));
+        return false;
+    }
 }
