@@ -26,6 +26,21 @@
 
 namespace greebo\conveniences;
 
+/**
+ * Container with convenient predefined properties
+ *
+ * @property string $vendor
+ * @property string $app
+ * @property string $charset
+ * @property boolean $debug
+ * @property string $action_name
+ *
+ * @property \greebo\essence\Event $event
+ * @property \greebo\conveniences\Request $request
+ * @property \greebo\conveniences\Response $response
+ * @property \greebo\conveniences\ActionSet $action
+ * @property \greebo\conveniences\Template $template
+ */
 class Container extends \greebo\essence\Container
 {
     function init()
@@ -33,6 +48,7 @@ class Container extends \greebo\essence\Container
         $this->vendor = 'greebo';
         $this->app = 'conveniences';
         $this->charset = 'utf-8';
+        $this->debug = false;
 
         $this->event = $this->shared(function($c) { return new \greebo\essence\Event; });
         $this->request = $this->shared(function($c) { return new Request; });
