@@ -20,7 +20,6 @@ class ActionSet extends \greebo\conveniences\ActionSet
             SELECT * FROM message ORDER BY created_at DESC LIMIT $offset, $l;
         ";
         $result = $this->pdo->query($query)->fetchAll();
-        $result = array_reverse($result);
         return $this->sendjson(array(
             'messages' => array_slice($result, 0, $limit),
             'more' => (count($result) > $limit),
@@ -36,12 +35,13 @@ class ActionSet extends \greebo\conveniences\ActionSet
     function createAction()
     {
         if (!$this->request->method('post')) {
-           return false;
+            $this->response->status(403);
+            return false;
         }
 
         $title = strip_tags($this->request->param('title'));
         $body = strip_tags($this->request->param('body'));
-        $date = time();
+        $date = date('Y-m-d H:i:s');
 
         $query = "
             INSERT INTO message (title, body, created_at) VALUES (?, ?, ?);
@@ -52,7 +52,7 @@ class ActionSet extends \greebo\conveniences\ActionSet
         return $this->sendjson(array(
             'title' => $title,
             'body' => $body,
-            'created_at' => date('Y-m-d H:i:s', $date)
+            'created_at' => $date,
         ));
     }
 }

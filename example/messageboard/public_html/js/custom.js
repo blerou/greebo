@@ -2,7 +2,7 @@ $(function() {
     // add message to container
     var add_message = function(message, method) {
         method = method || 'prepend';
-        var template = '<h3>%title%<span>%created_at%</span></h3><p>%body%</p><hr>';
+        var template = '<h3>%title%<span>%created_at%</span></h3><p>%body%</p>';
         $(['title', 'body', 'created_at']).each(function() {
             template = template.replace('%'+this+'%', message[this]);
         });
@@ -19,7 +19,8 @@ $(function() {
                   .appendTo('#more');
             }
             $('#more a').attr('href', '?action=list&o='+(parseInt(data.o)+parseInt(data.l))+'&l='+data.l)
-                
+        } else {
+          $('#more').html('');
         }
     };
     var load_messages = function(url) {
@@ -32,26 +33,29 @@ $(function() {
 
     load_messages('?action=list');
 
+    var form_send = function(e) {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: $.param($('input, textarea', this)),
+            dataType: 'json',
+            success: function(data) { add_message(data); }
+        });
+        $(this).hide();
+        $('#new').show();
+        return false;
+    };
+
     // add new message
     $('#new').click(function() {
-        var a = this;
         $.ajax({
             url: $(this).attr('href'),
             type: 'GET',
             success: function(data, textStatus, XMLHttpRequest) {
-                $(a).hide();
+                $('#new').hide();
                 $('#form').html(data);
                 $('#form').show();
-                $('#form form').submit(function() {
-                    $.getJSON(
-                        $(this).attr('action'),
-                        $.param($('input, textarea', this)),
-                        function(data) { add_message(data); }
-                    );
-                    $(this).hide();
-                    $(a).show();
-                    return false;
-                });
+                $('#form form').submit(form_send);
             }
         });
         return false;
