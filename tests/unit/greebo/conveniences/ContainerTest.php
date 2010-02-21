@@ -42,10 +42,16 @@ try {
 } catch (\greebo\conveniences\ContainerException $e) {
   $t->pass('template getter throws exception if template class not exists');
 }
-$container->action_name = 'index';
-$template = $container->template;
-$t->isa_ok($template, 'greebo\\test\\Template\\index', 'correct template instance');
 
-$value = '<b>foo</b>';
-$escaper = $template->escaper();
-$t->is_deeply($escaper($value), htmlspecialchars($value), 'template default escaper works properly');
+try {
+    $container->action_name = 'index';
+    $template = $container->template;
+    $t->isa_ok($template, 'greebo\\test\\Template\\index', 'correct template instance');
+
+    $value = '<b>foo</b>';
+    $escaper = $template->escaper();
+    $t->is_deeply($escaper($value), htmlspecialchars($value), 'template default escaper works properly');
+} catch (Exception $e) {
+    $t->fail('correct template instance');
+    $t->fail('template default escaper works properly');
+}
