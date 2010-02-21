@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', true);
 
-require dirname(__DIR__).'/../src/greebo/essence/Greebo.php';
+require __DIR__.'/../../src/greebo/essence/Greebo.php';
 \greebo\essence\Greebo::register();
 
 $c = new \greebo\essence\Container;

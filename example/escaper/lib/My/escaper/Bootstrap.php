@@ -15,9 +15,9 @@ class Bootstrap extends \greebo\conveniences\Bootstrap
     $container->vendor = 'My';
     $container->app = 'escaper';
 
-    \greebo\security\Escaper::register($container->event);
+    \greebo\guards\Escaper::register($container->event);
 
-    error_reporting(E_NONE);
+    error_reporting(0);
     ini_set('display_errors', false);
   }
   

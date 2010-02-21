@@ -3,7 +3,7 @@
 error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 'on');
 
-require dirname(__DIR__).'/lib/My/simple/Bootstrap.php';
+require __DIR__.'/../lib/My/simple/Bootstrap.php';
 
 $b = new \My\simple\Bootstrap('prod');
 $b->run();
