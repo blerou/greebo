@@ -5,6 +5,7 @@ require_once __DIR__.'/../../bootstrap.php';
 class Bootstrap extends \greebo\conveniences\Bootstrap
 {
     public $t;
+    public $state = 0;
     function  __construct($env, $t)
     {
         $this->t = $t;
@@ -13,16 +14,30 @@ class Bootstrap extends \greebo\conveniences\Bootstrap
 
     function init()
     {
-        $this->t->pass('->__construct() calls ->init() properly');
+        $this->t->is($this->state, 0, '->__construct() calls ->init() properly');
+        $this->state++;
     }
 
-    function test()
+    function testInit()
     {
-        $this->t->pass('->__construct() calls environment related method properly');
+        $this->t->is($this->state, 1, '->__construct() calls env related ->init() properly');
+        $this->state++;
+    }
+
+    function setup()
+    {
+        $this->t->is($this->state, 2, '->__construct() calls ->setup() properly');
+        $this->state++;
+    }
+
+    function testSetup()
+    {
+        $this->t->is($this->state, 3, '->__construct() calls env related ->setup() properly');
+        $this->state++;
     }
 }
 
-$t = new lime_test(9);
+$t = new lime_test(11);
 
 $bootstrap = new Bootstrap('test', $t);
 

@@ -32,16 +32,23 @@ abstract class Bootstrap
       
     function __construct($env)
     {
+        $this->init();
+        if (method_exists($this, $method = $env.'Init')) {
+            $this->$method();
+        }
+        
         $container = $this->container();
         $container->env = $env;
         
-        $this->init();
-        if (method_exists($this, $env)) {
-            $this->$env();
+        $this->setup();
+        if (method_exists($this, $method = $env.'Setup')) {
+            $this->$method();
         }
     }
     
     abstract function init();
+
+    abstract function setup();
     
     function container()
     {
