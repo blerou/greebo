@@ -78,6 +78,13 @@ class Template
         unset($this->_slots[$slot], $this->_raw[$slot]);
     }
 
+    function raw($slot)
+    {
+        return isset($this->_raw[$slot])
+            ? $this->_raw[$slot]
+            : null;
+    }
+
     function rec($slot)
     {
         $this->_slot = $slot;
@@ -107,7 +114,7 @@ class Template
 
         ob_start();
         $this->content();
-        $content = trim(ob_get_clean());
+        $this->assign('_content', trim(ob_get_clean()));
 
         $extends = $this->_extends;
         if (null === $extends) {
@@ -117,15 +124,10 @@ class Template
                 $extends = $p->name;
             }
         }
-        if ($extends) {
-            if ($content) {
-                $this->assign('_content', $content);
-            }
-            $extends = new $extends($this->_event);
-            $content = $extends->assign($this->_raw)->fetch();
-        }
-
-        return $content;
+        
+        return ($extends)
+            ? $this->render($extends, $this->_raw)
+            : $this->_content;
     }
 
     function setup()
@@ -150,10 +152,18 @@ class Template
         return $val;
     }
 
-    function raw($slot)
+    /**
+     * helper method to render arbitrary templates with the given variables
+     *
+     * these classes act as partials.
+     *
+     * @param  string $class
+     * @param  array  $vars
+     * @return string
+     */
+    function render($class, array $vars = array())
     {
-        return isset($this->_raw[$slot])
-            ? $this->_raw[$slot]
-            : null;
+        $template = new $class($this->_event);
+        return $template->assign($vars)->fetch();
     }
 }

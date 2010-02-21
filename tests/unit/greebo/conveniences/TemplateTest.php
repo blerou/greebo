@@ -5,7 +5,7 @@ require_once __DIR__.'/../../bootstrap.php';
 use greebo\essence\Event;
 use greebo\conveniences\Template;
 
-$t = new lime_test(17);
+$t = new lime_test(18);
 
 $event = new Event;
 $template = new Template($event);
@@ -92,6 +92,14 @@ class extends_method extends Template
     }
 }
 
+class partial extends Template
+{
+    function content()
+    {
+        echo 'PARTIAL'.$this->bar;
+    }
+}
+
 $event = new Event;
 $template = new extends_layout($event);
 $template->foo = 'bar';
@@ -109,7 +117,6 @@ $result = $template->fetch();
 $excepted = 'bar';
 $t->is_deeply($result, $excepted, '->extend() disables inheritance properly');
 
-
 $event = new Event;
 $template = new extends_method($event);
 $template->foo = 'baz';
@@ -117,3 +124,7 @@ $template->foo = 'baz';
 $result = $template->fetch();
 $excepted = 'LAYOUT STARTbazLAYOUT END';
 $t->is_deeply($result, $excepted, '->fetch() handles ->extend() based inheritance properly');
+
+$result = $template->render('partial', array('bar' => 'foo'));
+$excepted = 'PARTIALfoo';
+$t->is_deeply($result, $excepted, '->render() works properly');
