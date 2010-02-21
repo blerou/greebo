@@ -26,6 +26,8 @@
 
 namespace greebo\conveniences;
 
+use greebo\essence\Event;
+
 class Template
 {
     private
@@ -33,9 +35,10 @@ class Template
         $_raw = array(),
         $_slot,
         $_escaper,
-        $_event;
+        $_event,
+        $_extends;
 
-    function __construct(\greebo\essence\Event $event)
+    function __construct(Event $event)
     {
         $this->_event = $event;
     }
@@ -100,24 +103,26 @@ class Template
     {
         $this->setup();
 
-        $this->_slots = $this->_event
-            ->filter('template.slots', $this, $this->_slots);
+        $this->_slots = $this->_event->filter('template.slots', $this, $this->_slots);
 
         ob_start();
-
         $this->content();
-
         $content = trim(ob_get_clean());
-       
-        $r = new \ReflectionObject($this);
-        $p = $r->getParentClass();
-        if ($p && $p->name != 'greebo\\conveniences\\Template') {
-            if ($content) {
-                $this->assign('content', $content.$this->content);
+
+        $extends = $this->_extends;
+        if (null === $extends) {
+            $r = new \ReflectionObject($this);
+            $p = $r->getParentClass();
+            if ($p && $p->name != 'greebo\\conveniences\\Template') {
+                $extends = $p->name;
             }
-            $content = $p->newInstance($this->_event)
-                ->assign($this->_raw)
-                ->fetch();
+        }
+        if ($extends) {
+            if ($content) {
+                $this->assign('_content', $content);
+            }
+            $extends = new $extends($this->_event);
+            $content = $extends->assign($this->_raw)->fetch();
         }
 
         return $content;
@@ -129,6 +134,11 @@ class Template
 
     function content()
     {
+    }
+
+    function extend($class)
+    {
+        $this->_extends = $class;
     }
 
     function escape($val)

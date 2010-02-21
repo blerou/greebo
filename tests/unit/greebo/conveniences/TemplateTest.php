@@ -5,7 +5,7 @@ require_once __DIR__.'/../../bootstrap.php';
 use greebo\essence\Event;
 use greebo\conveniences\Template;
 
-$t = new lime_test(15);
+$t = new lime_test(17);
 
 $event = new Event;
 $template = new Template($event);
@@ -70,12 +70,12 @@ class layout extends greebo\conveniences\Template
   function content()
   {
     echo 'LAYOUT START';
-    echo $this->content;
+    echo $this->_content;
     echo 'LAYOUT END';
   }
 }
 
-class base extends layout
+class extends_layout extends layout
 {
   function content()
   {
@@ -83,10 +83,37 @@ class base extends layout
   }
 }
 
+class extends_method extends Template
+{
+    function content()
+    {
+        $this->extend('layout');
+        echo $this->foo;
+    }
+}
+
 $event = new Event;
-$template = new base($event);
+$template = new extends_layout($event);
 $template->foo = 'bar';
 
 $result = $template->fetch();
 $excepted = 'LAYOUT STARTbarLAYOUT END';
-$t->is_deeply($result, $excepted, '->fetch() handles inheritance properly');
+$t->is_deeply($result, $excepted, '->fetch() handles class based inheritance properly');
+
+$event = new Event;
+$template = new extends_layout($event);
+$template->extend(false);
+$template->foo = 'bar';
+
+$result = $template->fetch();
+$excepted = 'bar';
+$t->is_deeply($result, $excepted, '->extend() disables inheritance properly');
+
+
+$event = new Event;
+$template = new extends_method($event);
+$template->foo = 'baz';
+
+$result = $template->fetch();
+$excepted = 'LAYOUT STARTbazLAYOUT END';
+$t->is_deeply($result, $excepted, '->fetch() handles ->extend() based inheritance properly');

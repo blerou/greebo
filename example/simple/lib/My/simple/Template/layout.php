@@ -5,7 +5,7 @@
   <title><?php echo $this->title; ?></title>
 </head>
 <body>
-  <?php echo $this->content; ?>
+  <?php echo $this->_content; ?>
 </body>
 </html>
 <?php }}

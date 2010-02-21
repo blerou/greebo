@@ -2,11 +2,9 @@
 
 <?php $this->title = 'from index template'; ?>
 
-<?php $this->rec('content') ?>
 <form action="simple.php?action=post" method="post">
 <input type="text" name="title">
 <input type="submit">
 </form>
-<?php $this->stop() ?>
 
 <?php }}
