@@ -11,14 +11,14 @@ $(function() {
     var add_more = function(data) {
         if (data.more) {
             if (!$('#more a').length) {
-              $('<a href="">More</a>')
-                  .click(function() {
-                      load_messages($(this).attr('href'));
-                      return false;
-                  })
-                  .appendTo('#more');
+                $('<a href="">More</a>')
+                    .click(function() {
+                        load_messages($(this).attr('href'));
+                        return false;
+                    })
+                    .appendTo('#more');
             }
-            $('#more a').attr('href', '?action=list&o='+(parseInt(data.o)+parseInt(data.l))+'&l='+data.l)
+            $('#more a').attr('href', '?action=list&o='+(parseInt(data.o)+parseInt(data.l))+'&l='+data.l);
         } else {
           $('#more').html('');
         }
