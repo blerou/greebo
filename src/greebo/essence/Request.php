@@ -27,11 +27,10 @@
 namespace greebo\essence;
 
 /**
- * Simple request class
- * 
- * Request's responsibility is to:
- *  - wrap main PHP superglobals arrays (through method calls)
- *  - introduces simple API that is according to Response API
+ * Request class
+ *
+ * This class is a simple Value object.
+ * It also introduces simple API that is according to Response API
  * It's advantage that provide a default return value as second parameter.
  *
  * Request can also store some related values, as attributes, through
@@ -40,57 +39,90 @@ namespace greebo\essence;
  * @package    greebo
  * @subpackage essence
  * @author     blerou
- * 
- * @method string cookie(string $name, $def = null)  getter of a $_COOKIE
- * @method array  files(string $name, $def = null)   getter of an uploaded file ($_FILES)
- * @method mix    get(string $name, $def = null)     getter of a $_GET index
- * @method mix    post(string $name, $def = null)    getter of a $_POST index
- * @method mix    server(string $name, $def = null)  getter of a $_SERVER index (->header() is a shortcut)
  */
 class Request
 {
+    private $_get;
+    private $_post;
+    private $_files;
+    private $_cookie;
+    private $_server;
     private $_attrs = array();
 
-    function header($name, $def = null)
+    public function __construct(array $get, array $post, array $files, array $cookie, array $server)
     {
-        $name = strtoupper($name);
-        return isset($_SERVER[$name])
-            ? $_SERVER[$name]
-            : $def;
-    }
-    
-    function param($name, $def = null)
-    {
-        $param = $_GET;
-        if ('POST' === $this->header('REQUEST_METHOD')) {
-            $param = array_merge($param, $_POST);
-        }
-        return isset($param[$name]) 
-            ? $param[$name]
-            : $def;
-    }
-    
-    function __call($method, $args)
-    {
-        $param = @$GLOBALS['_'.strtoupper($method)];
-        if (isset($param[$args[0]])) {
-            return $param[$args[0]];
-        }
-        if (isset($args[1])) {
-            return $args[1];
-        }
-        return null;
+        $this->_get = $get;
+        $this->_post = $post;
+        $this->_files = $files;
+        $this->_cookie = $cookie;
+        $this->_server = $server;
     }
 
-    function __get($name)
+    public function get($name, $default = null)
+    {
+        return isset($this->_get[$name])
+            ? $this->_get[$name]
+            : $default;
+    }
+
+    public function post($name, $default = null)
+    {
+        return isset($this->_post[$name])
+            ? $this->_post[$name]
+            : $default;
+    }
+
+    public function param($name, $default = null)
+    {
+        $param = $this->_get;
+        if ('POST' === $this->header('REQUEST_METHOD')) {
+            $param += $this->_post;
+        }
+        return isset($param[$name])
+            ? $param[$name]
+            : $default;
+    }
+
+    public function files($name, $default = null)
+    {
+        return isset($this->_files[$name])
+            ? $this->_files[$name]
+            : $default;
+    }
+
+    public function cookie($name, $default = null)
+    {
+        return isset($this->_cookie[$name])
+            ? $this->_cookie[$name]
+            : $default;
+    }
+    
+    public function server($name, $default = null)
+    {
+        return isset($this->_server[$name])
+            ? $this->_server[$name]
+            : $default;
+    }
+
+    public function header($name, $default = null)
+    {
+        return $this->server($name, $default);
+    }
+
+    public function __get($name)
     {
         return isset($this->_attrs[$name])
             ? $this->_attrs[$name]
             : null;
     }
 
-    function __set($name, $val)
+    public function __set($name, $value)
     {
-        $this->_attrs[$name] = $val;
+        $this->_attrs[$name] = $value;
+    }
+    
+    public function __isset($name)
+    {
+        return isset($this->_attrs[$name]);
     }
 }
