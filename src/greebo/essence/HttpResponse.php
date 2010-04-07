@@ -37,49 +37,32 @@ namespace greebo\essence;
  * @package    greebo
  * @subpackage essence
  * @author     blerou
- *
- * @property array       $_header   Store headers
- * @property array       $_cookie   Store cookies
- * @property int         $_status   Store the status code
- * @property string|null $_content  Stores the response body
  */
-class Response
+class HttpResponse
 {
-    private 
-        $_header = array(),
-        $_cookie = array(),
-        $_status = 200,
-        $_content = null,
-        $_event;
+    private $_header = array();
+    private $_cookie = array();
+    private $_status = 200;
+    private $_content;
 
-    function __construct(Event $event)
-    {
-        $this->_event = $event;
-    }
-
-    /**
-     * Setter of status code
-     *
-     * @param  int $status
-     * @return \greebo\essence\Response
-     */
-    function status($status)
+    public function setStatus($status)
     {
         $this->_status = (int)$status;
-        return $this;
+    }
+
+    public function getStatus()
+    {
+        return $this->_status;
     }
     
-    /**
-     * Setter of a header
-     *
-     * @param  string $name
-     * @param  string $val
-     * @return \greebo\essence\Response
-     */
-    function header($name, $val)
+    public function setHeader($name, $value)
     {
-        $this->_header[$name] = $val;
-        return $this;
+        $this->_header[$name] = $value;
+    }
+
+    public function getHeaders()
+    {
+        return $this->_header;
     }
     
     /**
@@ -88,42 +71,30 @@ class Response
      * Uses same API as setrawcookie() function.
      *
      * @see setrawcookie
-     * @return \greebo\essence\Response
      */
-    function cookie()
+    public function setCookie()
     {
-        $this->_cookie[] = func_get_args();
-        return $this;
+        $args = func_get_args();
+        $this->_cookie[$args[0]] = $args;
+    }
+
+    public function getCookies()
+    {
+        return $this->_cookie;
     }
     
     /**
      * Setter of the response body
      *
      * @param  string $content
-     * @return \greebo\essence\Response
      */
-    function content($content)
+    public function setContent($content)
     {
-        $this->_content = $content;
-        return $this;
+        $this->_content = (string)$content;
     }
-    
-    /**
-     * Send response to client
-     *
-     * This is the very last method that called in dispatch process.
-     */
-    function send()
+
+    public function getContent()
     {
-        header($_SERVER['SERVER_PROTOCOL'].' '.$this->_status);
-        foreach ($this->_header as $name => $header) {
-            header("$name: $header");
-        }
-        foreach ($this->_cookie as $cookie) {
-            call_user_func_array('setrawcookie', $cookie);
-        }
-        if (null !== $this->_content) {
-            echo $this->_event->filter('response.content', $this, $this->_content);
-        }
+        return $this->_content;
     }
 }
