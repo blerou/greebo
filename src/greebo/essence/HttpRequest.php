@@ -40,7 +40,7 @@ namespace greebo\essence;
  * @subpackage essence
  * @author     blerou
  */
-class Request
+class HttpRequest
 {
     private $_get;
     private $_post;
@@ -75,7 +75,7 @@ class Request
     public function param($name, $default = null)
     {
         $param = $this->_get;
-        if ('POST' === $this->header('REQUEST_METHOD')) {
+        if ('POST' === $this->server('REQUEST_METHOD')) {
             $param += $this->_post;
         }
         return isset($param[$name])
