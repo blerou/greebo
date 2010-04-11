@@ -10,7 +10,7 @@
 
 namespace greebo\essence;
 
-class HttpRedirect extends HttpException
+class HttpRedirect extends \Exception
 {
     protected $code = 302;
 }

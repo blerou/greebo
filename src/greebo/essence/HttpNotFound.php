@@ -10,7 +10,7 @@
 
 namespace greebo\essence;
 
-class HttpNotFound extends HttpException
+class HttpNotFound extends \Exception
 {
     protected $code = 404;
 }
