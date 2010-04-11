@@ -10,12 +10,10 @@
 
 namespace greebo\headache;
 
-interface ExceptionHandler
+class ExceptionExceptionHandler implements ExceptionHandler
 {
-    /**
-     * @param  \Exception $exception
-     * @return HttpResponse
-     * @throws \Exception
-     */
-    public function handle(\Exception $exception);
+    public function handle(\Exception $exception)
+    {
+        throw $exception;
+    }
 }
